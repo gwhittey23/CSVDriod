@@ -1,16 +1,40 @@
 import json
 import urllib2
+from urlparse import urljoin
 import sys
 from kivy.network.urlrequest import UrlRequest
 from collections import namedtuple
+from kivy.uix.settings import SettingsWithSidebar
+from kivy.app import App
 import pprint
-'cs is used to denote comicstream items'
-
-
-
+'cs is used to denote comicstreamer trying to make this plugable between comicstreamer and other servers'
+app_config = App.get_running_app().config
 base_url = 'http://192.168.0.8:32500'
 base_dir = '/home/gerardwhittey/.config/crdroid/'
+class ComicSteam(object):
+    def __init__(self):
+        self.base_url == app_config('Server', 'url')
+
+        self.api_key == app_config('Server', 'api_key')
+
+    def getCVContent(self, url):
+
+
+    def parseDateStr( self, date_str):
+            day = None
+            month = None
+            year = None
+            if  date_str is not None:
+                parts = date_str.split('-')
+                year = parts[0]
+                if len(parts) > 1:
+                    month = parts[1]
+                    if len(parts) > 2:
+                        day = parts[2]
+            return day, month, year
 class CsSeries(object):
+    pass
+class CsComic(CsSeries):
      def __init__(self, comic_data):
         self.id = id
         self.added_ts = comic_data['added_ts']
@@ -29,16 +53,14 @@ class CsSeries(object):
         self.volume = comic_data['volume']
         self.weblink = comic_data['weblink']
         self.thumbnail = self._get_thumb(self.id)
-
-class CsComic(CsSeries):
-
-    def _get_thumb(self, id):
+    def _get_cs_thumb(self, id):
         src = "%s/comic/%d/thumbnail" % (base_url, int(id))
         response=urllib2.urlopen(src)
         fname='%s/%d_thumb.jpg' %(base_dir, id)
         with open(fname,'w') as f:
              f.write(response.read())
         return fname
+
 def cs_get_comic_info(comicid):
 
     src = "%s/comic/%d" % (base_url, int(comicid))
@@ -51,6 +73,11 @@ def cs_get_comic_info(comicid):
         comic = CsComic(comic_data)
         print comic.thumbnail
 
+def gen_url(server_url,mode):
+    api_key ="api_key="
+    user_name
+    pass_word
+    urljoin(server_url,)
 
 if __name__ == "__main__":
     cs_get_comic_info(1860)
