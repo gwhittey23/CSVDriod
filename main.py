@@ -1,4 +1,4 @@
-__version__ = '1.002'
+__version__ = '1.003'
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import NumericProperty, ObjectProperty
