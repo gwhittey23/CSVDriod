@@ -1,6 +1,3 @@
-#:import NavigationDrawer kivy.garden.navigationdrawer.NavigationDrawer
-#:import Magnet kivy.garden.magnet.Magnet
-
 <SidePanel>:
     orientation: 'vertical'
     spacing: 1
@@ -16,6 +13,7 @@
 
 <RootWidget>:
     manager: manager
+
 
 #This is the root widget's kv definition
 #    NavigationDrawer:
@@ -45,47 +43,70 @@
                 Label:
                     text: 'first screen!'
                     font_size: 30
-                Magnet:
-                    transitions: {'pos': 'out_quad', 'size': 'out_elastic'}
-                    duration: 1
 
-                    BoxLayout:
-                        Button:
-                            text: 'Load Config'
-                            font_size: 30
-                            on_release: app.open_settings()
-                        Button:
-                            text: 'get random colour screen'
-                            font_size: 30
-                            on_release: root.manager.current = 'comicscreen'
-                            on_release: app.root.load_from_server()
-                            on_release: root.pos_hint =  {'top': 1}
+                BoxLayout:
+                    Button:
+                        text: 'Load Config'
+                        font_size: 30
+                        on_release: app.open_settings()
+                    Button:
+                        text: 'get random colour screen'
+                        font_size: 30
+                        on_release: root.manager.current = 'comicscreen'
+                        on_release: app.root.load_comic()
+                        on_release: root.pos_hint =  {'top': 1}
 
         ComicScreen:
             name: 'comicscreen'
-
+            id: bl
             FloatLayout:
-                NavigationDrawer:
-                    BoxLayout:
-                        orientation: 'horizontal'
-                        Label:
-                            text: 'Panel'
-                        Label:
-                            text: 'L2'
                 Label:
                     color: (255,0,255,1)
                 Carousel:
                     id: my_carousel
                     size_hint: 1,1
                 Button:
-                    pos_hint: {'x': .001, 'y': .0001}
+                    pos_hint: {'x': .01, 'y': .0001}
                     text: "Prev"
-                    size_hint: .2, .2
+                    size_hint: .2, .05
                     on_release: my_carousel.load_previous()
-                    opacity: 0
+                    opacity: 1
                 Button:
-                    pos_hint: {'x': .85, 'y': .0001}
+                    pos_hint: {'x': .85, 'y': .001}
                     text: "Next"
-                    size_hint: .2, .2
+                    size_hint: .2, .05
                     on_release: my_carousel.load_next()
-                    opacity: 0
+                    opacity: 1
+                Button:
+                    pos_hint: {'x': .3, 'y': .0001}
+                    text: 'Open Page Scroll'
+                    size_hint: .4, .05
+                    opacity: 1
+                    on_release: app.root.open_pagescroll_popup()
+
+
+
+
+
+#                    id: popupcontent
+#                    Label:
+#                        text: 'Slide 0'
+#
+#                    Label:
+#                        text: 'Slide 1'
+#
+#                    Image:
+#                        source: '/Users/gerardwhittey/PycharmProjects/CRDriod/images/1855_thumb.jpg'
+#                        size: (40,40)
+#                    Image:
+#                        source: '/Users/gerardwhittey/PycharmProjects/CRDriod/images/1855_thumb.jpg'
+#                        size: (40,40)
+#                    Image:
+#                        source: '/Users/gerardwhittey/PycharmProjects/CRDriod/images/1855_thumb.jpg'
+#                        size: (40,40)
+#                    Image:
+#                        source: '/Users/gerardwhittey/PycharmProjects/CRDriod/images/1855_thumb.jpg'
+#                        size: (40,40)
+#                    Image:
+#                        source: '/Users/gerardwhittey/PycharmProjects/CRDriod/images/1855_thumb.jpg'
+#                        size: (40,40)

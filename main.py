@@ -1,4 +1,11 @@
 __version__ = '1.003'
+DEBUG = True
+
+if DEBUG:
+    from kivy.config import Config
+    print 'setting windows size'
+    Config.set('graphics', 'width', '600')
+    Config.set('graphics', 'height', '1024')
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import NumericProperty, ObjectProperty
@@ -8,6 +15,10 @@ from kivy.uix.image import Image
 from settingsjson import settings_json
 import os.path
 import urllib2
+from kivy.uix.popup import Popup
+from kivy.uix.button import Button
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.gridlayout import GridLayout
 
 class RootWidget(FloatLayout):
     '''This the class representing your root widget.
@@ -18,28 +29,9 @@ class RootWidget(FloatLayout):
     manager = ObjectProperty()
 
     def load_next_page(self, *args):
-        base_url = App.get_running_app().config.get('Server', 'url')
-        base_file = App.get_running_app().config.get('Server', 'storagedir')
+        pass
 
-        carousel = self.ids['my_carousel']
-        carouselindex = carousel.index
-        num_slides = 0
-        for slide in carousel.slides:
-            num_slides = num_slides+1
-        if num_slides < carouselindex + pagebuffer:
-            print 'ok'
-        id = 1854
-        nextpage = carouselindex  + pagebuffer
-        src = "%s/comic/%d/page/%d" % (base_url, id, nextpage)
-        response=urllib2.urlopen(src)
-        fname='%s/%d_P%d.jpg' %(base_file,id, carouselindex)
-        with open(fname,'w') as f:
-            f.write(response.read())
-        image = Image(source=fname, allow_stretch=True)
-
-        carousel.add_widget(image)
-
-    def load_from_server(self, *args):
+    def load_comic(self, *args):
         id = 1854
         page_count = 22
         base_url = App.get_running_app().config.get('Server', 'url')
@@ -60,6 +52,21 @@ class RootWidget(FloatLayout):
             carousel.add_widget(image)
 
         carousel.pos_hit = {'top':1}
+        grid = GridLayout(rows=1, size_hint=(None,None))
+        grid.bind(minimum_width=grid.setter('width'))
+
+        for i in range(60):
+            grid.add_widget(Button(text='#00' + str(i), size=(100,100), size_hint=(None,None)
+
+                                   ))
+
+        scroll = ScrollView( size_hint=(1,1), do_scroll_x=True, do_scroll_y=False )
+        scroll.add_widget(grid)
+
+        self.pop = Popup(title='Pages', content=scroll,pos_hint ={'y': .0001},size_hint = (1,.23))
+    def open_pagescroll_popup(self):
+
+        self.pop.open()
 
 class ComicScreen(Screen):
     pass

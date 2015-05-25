@@ -9,6 +9,7 @@ import pprint
 
 
 base_url = 'http://192.168.0.8:32500'
+base_dir = '/Users/gerardwhittey/Library/Application Support/crdroid'
 class CsSeries(object):
      def __init__(self, comic_data):
         self.id = id
@@ -34,7 +35,7 @@ class CsComic(CsSeries):
     def _get_thumb(self, id):
         src = "%s/comic/%d/thumbnail" % (base_url, int(id))
         response=urllib2.urlopen(src)
-        fname='../base_file/%d_thumb.jpg' %id
+        fname='%s/%d_thumb.jpg' %(base_dir, id)
         with open(fname,'w') as f:
              f.write(response.read())
         return fname
@@ -52,4 +53,4 @@ def cs_get_comic_info(comicid):
 
 
 if __name__ == "__main__":
-    cs_get_comic_info(sys.argv[1])
+    cs_get_comic_info(1860)
