@@ -6,6 +6,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.settings import SettingsWithSidebar
 from kivy.uix.image import Image
 from settingsjson import settings_json
+import os.path
 import urllib2
 
 class RootWidget(FloatLayout):
@@ -18,36 +19,45 @@ class RootWidget(FloatLayout):
 
     def load_next_page(self, *args):
         base_url = App.get_running_app().config.get('Server', 'url')
-        base_file = App.get_running_app().config.get('Server', 'bufferdir')
+        base_file = App.get_running_app().config.get('Server', 'storagedir')
+
         carousel = self.ids['my_carousel']
-        i = carousel.index
-        print carousel.current_slide
-        id = 1855
-        nextpage = i  + 3
-        src = "%s/comic/1855/page/%d" % (base_url, nextpage)
-        print 'This is bugger load %s' %src
+        carouselindex = carousel.index
+        num_slides = 0
+        for slide in carousel.slides:
+            num_slides = num_slides+1
+        if num_slides < carouselindex + pagebuffer:
+            print 'ok'
+        id = 1854
+        nextpage = carouselindex  + pagebuffer
+        src = "%s/comic/%d/page/%d" % (base_url, id, nextpage)
         response=urllib2.urlopen(src)
-        fname='images/%d_P%d.jpg' %(id, i)
+        fname='%s/%d_P%d.jpg' %(base_file,id, carouselindex)
         with open(fname,'w') as f:
             f.write(response.read())
         image = Image(source=fname, allow_stretch=True)
+
         carousel.add_widget(image)
 
     def load_from_server(self, *args):
-        id = 1855
+        id = 1854
+        page_count = 22
         base_url = App.get_running_app().config.get('Server', 'url')
+        base_file = App.get_running_app().config.get('Server', 'storagedir')
         carousel = self.ids['my_carousel']
-        pagebuffer = int(App.get_running_app().config.get('Server', 'pagebuffer'))
-        for i in range(0,pagebuffer+1):
-             src = "%s/comic/1855/page/%d" % (base_url, i)
-             print src
-             response=urllib2.urlopen(src)
-             #load images asynchronously
-             fname='images/%d_P%d.jpg' %(id, i)
-             with open(fname,'w') as f:
-                 f.write(response.read())
-             image = Image(source=fname, allow_stretch=True)
-             carousel.add_widget(image)
+
+        for i in range(0,page_count):
+            fname='%s/%d_P%d.jpg' %(base_file, id, i)
+            if  os.path.isfile(fname) == False:
+                 src = "%s/comic/%d/page/%d" % (base_url, id, i)
+                 print 'getting cache copy %s from %s' % (fname, src)
+                 response=urllib2.urlopen(src)
+                 #load images asynchronously
+                 with open(fname,'w') as f:
+                     f.write(response.read())
+            image = Image(source=fname, allow_stretch=True)
+            print carousel.index
+            carousel.add_widget(image)
 
         carousel.pos_hit = {'top':1}
 
@@ -92,7 +102,7 @@ class CRDroidApp(App):
                 'pagebuffer': 10,
                 'optionsexample': 'option2',
                 'url': 'http://',
-                'bufferdir': self.user_data_dir
+                'storagedir': self.user_data_dir
                 }
             )
 

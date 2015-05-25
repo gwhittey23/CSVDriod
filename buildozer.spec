@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = CRDroid
+title = CSVDroid
 
 # (str) Package name
-package.name = CRDroid
+package.name = CSVDroid
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = com.andriod.crdroid
+package.domain = com.kivy.CSVDroid
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -19,10 +19,10 @@ source.include_exts = py,png,jpg,kv,atlas,json
 #source.exclude_exts = spec
 
 # (list) List of directory to exclude (let empty to not exclude anything)
-#source.exclude_dirs = tests, bin, jotpad, images
+source.exclude_dirs = tests, bin, jotpad, images
 
 # (list) List of exclusions using pattern matching
-#source.exclude_patterns = license,images/*/*.jpg
+source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
 version.regex = __version__ = ['"](.*)['"]
@@ -36,7 +36,7 @@ version.filename = %(source.dir)s/main.py
 requirements = kivy
 
 # (list) Garden requirements
-garden_requirements =magnet,navigationdrawer
+#garden_requirements =magnet,navigationdrawer
 
 # (str) Presplash of the application
 #presplash.filename = %(source.dir)s/data/presplash.png

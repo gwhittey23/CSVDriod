@@ -25,7 +25,7 @@ settings_json = json.dumps([
      'section': 'Server',
      'key': 'url'},
     {'type': 'path',
-     'title': 'Buffer Directory',
-     'desc': 'Where to store Page Buffer',
+     'title': 'Storage Directory',
+     'desc': 'Where to store Comic Pages Buffer',
      'section': 'Server',
-     'key': 'bufferdir'}])
+     'key': 'storagedir'}])

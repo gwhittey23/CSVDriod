@@ -34,7 +34,7 @@ class CsComic(CsSeries):
     def _get_thumb(self, id):
         src = "%s/comic/%d/thumbnail" % (base_url, int(id))
         response=urllib2.urlopen(src)
-        fname='../images/%d_thumb.jpg' %id
+        fname='../base_file/%d_thumb.jpg' %id
         with open(fname,'w') as f:
              f.write(response.read())
         return fname
