@@ -13,16 +13,6 @@
 
 <RootWidget>:
     manager: manager
-
-
-#This is the root widget's kv definition
-#    NavigationDrawer:
-#        BoxLayout:
-#            orientation: 'horizontal'
-#            Label:
-#                text: 'Panel'
-#            Label:
-#                text: 'L2'
     ScreenManager:
         id: manager
 
@@ -70,20 +60,46 @@
                     text: "Prev"
                     size_hint: .2, .05
                     on_release: my_carousel.load_previous()
-                    opacity: 1
+                    opacity: 0
                 Button:
                     pos_hint: {'x': .85, 'y': .001}
                     text: "Next"
                     size_hint: .2, .05
                     on_release: my_carousel.load_next()
-                    opacity: 1
+                    opacity: 0
                 Button:
                     pos_hint: {'x': .3, 'y': .0001}
                     text: 'Open Page Scroll'
                     size_hint: .4, .05
-                    opacity: 1
+                    opacity: 0
                     on_release: app.root.open_pagescroll_popup()
 
+<ButtonListItem@Button>:
+    wid: self.wid
+    image: self.image
+    title: self.title
+    label: self.label
+    on_press: self.click()
+    BoxLayout:
+        orientation: "horizontal"
+        size: self.parent.size      # match the button's size
+        pos: self.parent.pos        # match the button's position
+        padding: 0
+        spacing: 10
+
+        Image:
+            size_hint: None, 1
+            source: root.image
+            size: 129, 200
+            valign: "middle"
+
+
+
+<ButtonList@GridLayout>
+    id: output
+    cols: 1
+    size_hint_y: None
+    height: self.minimum_height
 
 
 

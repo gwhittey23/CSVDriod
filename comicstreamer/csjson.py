@@ -9,7 +9,7 @@ import pprint
 
 
 base_url = 'http://192.168.0.8:32500'
-base_dir = '/Users/gerardwhittey/Library/Application Support/crdroid'
+base_dir = '/home/gerardwhittey/.config/crdroid/'
 class CsSeries(object):
      def __init__(self, comic_data):
         self.id = id
