@@ -26,7 +26,7 @@ from csvdb.csvdroid_db import build_db
 from kivy.logger import Logger
 from csconnector import ComicStream
 
-class ButtonListItem(Button):
+class ComicScreenBntListItem(Button):
     id = StringProperty('')
     image = StringProperty('')
     title = StringProperty('')
@@ -49,8 +49,35 @@ class RootWidget(FloatLayout):
 
     manager = ObjectProperty()
 
+    def load_lib_screen(self, *args):
+        id = 96
+        page_count = 22
+        base_url = App.get_running_app().config.get('Server', 'url')
+        base_file = App.get_running_app().config.get('Server', 'storagedir')
+        grid = GridLayout(cols=3, size_hint=(None,None),spacing=10,padding=10, pos_hint = {.2,.2})
+        grid.bind(minimum_height=grid.setter('height'))
 
-    def load_comic(self, *args):
+        for i in range(0,page_count):
+            fname='%s/%d_P%d.jpg' %(base_file, id, i)
+            if  os.path.isfile(fname) == False:
+                 src = "%s/comic/%d/page/%d" % (base_url, id, i)
+                 print src
+                 print 'getting cache copy %s from %s' % (fname, src)
+                 response=urllib2.urlopen(src)
+                 #load images asynchronously
+                 with open(fname,'w') as f:
+                     f.write(response.read())
+            page_button = ButtonListItem(id=str(i), text='#Page' + str(i), size=(129, 200), size_hint=(None, None),
+                                         image=base_file + '/' + str(id) + '_P' + str(i) + '.jpg',
+                                         )
+            grid.add_widget(page_button)
+        scroll = ScrollView( size_hint=(.9,.85), do_scroll_y=True, do_scroll_x=False,
+                             pos_hint={'center_x': .6, 'center_y': .5} )
+        scroll.add_widget(grid)
+        self.ids['fl1'].add_widget(scroll)
+
+
+    def load_comic_screen(self, *args):
         id = 96
         page_count = 22
         base_url = App.get_running_app().config.get('Server', 'url')
@@ -68,7 +95,7 @@ class RootWidget(FloatLayout):
                  #load images asynchronously
                  with open(fname,'w') as f:
                      f.write(response.read())
-            page_button = ButtonListItem(id=str(i), text='#Page' + str(i), size=(129, 200), size_hint=(None, None),
+            page_button = ComicScreenBntListItem(id=str(i), text='#Page' + str(i), size=(129, 200), size_hint=(None, None),
                                          image=base_file + '/' + str(id) + '_P' + str(i) + '.jpg',
                                          )
             grid.add_widget(page_button)
@@ -78,8 +105,6 @@ class RootWidget(FloatLayout):
         carousel.pos_hit = {'top':1}
 
         #Build the popup scroll of page buttons
-
-
         scroll = ScrollView( size_hint=(1,1), do_scroll_x=True, do_scroll_y=False )
         scroll.add_widget(grid)
         self.pop = Popup(title='Pages', content=scroll, pos_hint ={'y': .0001},size_hint = (1,.23))

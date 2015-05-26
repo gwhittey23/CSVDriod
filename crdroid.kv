@@ -17,7 +17,7 @@
         id: manager
 
         Screen:
-            name: 'libraryscreen'
+            name: 'MainScreen'
             ActionBar:
                 id: _action
                 size_hint: 1,0.03
@@ -25,9 +25,26 @@
                 ActionView:
                     use_separator: True
                     ActionPrevious:
-                        title: 'Settings'
+                        title: 'ComicStreamer Reader For Driod'
                         with_previous: False
+                    ActionOverflow:
+
+                    ActionButton:
+                        text: 'Settings'
                         on_release: app.open_settings()
+                    ActionButton:
+                        text: 'Btn2'
+                    ActionButton:
+                        text: 'Btn3'
+                    ActionGroup:
+                        text: 'Group1'
+                        ActionButton:
+                            text: 'Btn5'
+                        ActionButton:
+                            text: 'Btn6'
+                        ActionButton:
+                            text: 'Btn7'
+
             BoxLayout:
                 orientation: 'vertical'
                 Label:
@@ -42,13 +59,64 @@
                     Button:
                         text: 'Load Config'
                         font_size: 30
-                        on_release: app.open_settings()
+                        on_release: root.manager.current = 'libraryScreen'
+                        on_release: app.root.load_lib_screen()
                     Button:
-                        text: 'get random colour screen'
+                        text: 'Comic Screen'
                         font_size: 30
                         on_release: root.manager.current = 'comicscreen'
-                        on_release: app.root.load_comic()
+                        on_release: app.root.load_comic_screen()
                         on_release: root.pos_hint =  {'top': 1}
+        Screen:
+            name: 'libraryScreen'
+            ActionBar:
+                id: _action
+                size_hint: 1,0.03
+                pos_hint: {'top':1}
+                ActionView:
+                    use_separator: True
+                    ActionPrevious:
+                        title: 'ComicStreamer Reader For Driod'
+                        with_previous: False
+                    ActionOverflow:
+                    ActionButton:
+                        text: 'Settings'
+                        on_release: app.open_settings()
+                    ActionButton:
+                        text: 'Btn2'
+                    ActionButton:
+                        text: 'Btn3'
+                    ActionGroup:
+                        text: 'Group1'
+                        ActionButton:
+                            text: 'Btn5'
+                        ActionButton:
+                            text: 'Btn6'
+                        ActionButton:
+                            text: 'Btn7'
+            FloatLayout:
+                id:fl1
+                Label:
+                    text:'hi'
+                    color: (255,0,255,1)
+            Button:
+                pos_hint: {'x': .01, 'y': .0001}
+                text: "Prev"
+                size_hint: .2, .05
+                on_release: my_carousel.load_previous()
+                opacity: 0
+            Button:
+                pos_hint: {'x': .85, 'y': .001}
+                text: "Next"
+                size_hint: .2, .05
+                on_release: my_carousel.load_next()
+                opacity: 0
+            Button:
+                pos_hint: {'x': .3, 'y': .0001}
+                text: 'Open Page Scroll'
+                size_hint: .4, .05
+                opacity: 0
+                on_release: app.root.open_pagescroll_popup()
 
         ComicScreen:
             name: 'comicscreen'
@@ -78,7 +146,7 @@
                     opacity: 0
                     on_release: app.root.open_pagescroll_popup()
 
-<ButtonListItem@Button>:
+<ComicScreenBntListItem@Button>:
     wid: self.wid
     image: self.image
     title: self.title
@@ -96,8 +164,24 @@
             source: root.image
             size: 129, 200
             valign: "middle"
+<libraryScreen@Button>:
+    wid: self.wid
+    image: self.image
+    title: self.title
+    label: self.label
+    on_press: self.click()
+    BoxLayout:
+        orientation: "horizontal"
+        size: self.parent.size      # match the button's size
+        pos: self.parent.pos        # match the button's position
+        padding: 0
+        spacing: 10
 
-
+        Image:
+            size_hint: None, 1
+            source: root.image
+            size: 129, 200
+            valign: "middle"
 
 <ButtonList@GridLayout>
     id: output
