@@ -13,8 +13,11 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.settings import SettingsWithSidebar
 from kivy.uix.image import Image
 from settingsjson import settings_json
+import sys
 import os.path
 import urllib2
+import logging
+import logging.handlers
 from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
@@ -95,6 +98,7 @@ class SecondScreen(Screen):
     pass
 
 class CRDroidApp(App):
+
     '''This is the main class of your app.
        Define any app wide entities here.
        This class can be accessed anywhere inside the kivy app as,
@@ -114,7 +118,6 @@ class CRDroidApp(App):
 
        The App part is auto removed and the whole name is lowercased.
     '''
-
     def build(self):
         self.settings_cls = SettingsWithSidebar
         self.use_kivy_settings = True
@@ -132,7 +135,25 @@ class CRDroidApp(App):
                 'storagedir': self.user_data_dir
                 }
             )
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        log_folder = App.get_running_app().user_data_dir + '/log'
+        print 'log_folder = %s' % log_folder
+        log_file = os.path.join(log_folder , "CSVDroid.log")
+        if not os.path.exists(os.path.dirname(log_file)):
+            os.makedirs(os.path.dirname(log_file))
+        fh = logging.handlers.RotatingFileHandler(log_file, maxBytes=1048576, backupCount=4, encoding="UTF8")
+        fh.setLevel(logging.DEBUG)
+        fh.setFormatter(formatter)
+        logger.addHandler(fh)
 
+        # By default only do info level to console
+        sh = logging.StreamHandler(sys.stdout)
+        sh.setLevel(logging.INFO)
+        sh.setFormatter(formatter)
+        logger.addHandler(sh)
+        logging.info("logging set")
     def build_settings(self, settings):
         settings.add_json_panel('Main Settings',
                                 self.config,

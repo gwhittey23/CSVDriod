@@ -1,24 +1,35 @@
 import json
 import urllib2
 from urlparse import urljoin
+import logging
 import sys
 from kivy.network.urlrequest import UrlRequest
 from collections import namedtuple
 from kivy.uix.settings import SettingsWithSidebar
 from kivy.app import App
+from kivy.network.urlrequest import UrlRequest
 import pprint
 'cs is used to denote comicstreamer trying to make this plugable between comicstreamer and other servers'
 app_config = App.get_running_app().config
 base_url = 'http://192.168.0.8:32500'
 base_dir = '/home/gerardwhittey/.config/crdroid/'
+
 class ComicSteam(object):
+
     def __init__(self):
         self.base_url == app_config('Server', 'url')
-
         self.api_key == app_config('Server', 'api_key')
 
-    def getCVContent(self, url):
+    #get full list from /comiclist from our server
+    def cs_decode_json(req, results):
+        print results
 
+    def get_fulldata(self):
+
+        src = "%s/comiclist" % (base_url)
+        req = UrlRequest(
+                   'http://api.openweathermap.org/data/2.5/weather?q=Paris,fr',
+                    self.cs_decode_json)
 
     def parseDateStr( self, date_str):
             day = None
@@ -33,9 +44,16 @@ class ComicSteam(object):
                         day = parts[2]
             return day, month, year
 class CsSeries(object):
-    pass
+    def __init__(self, comic_data):
+        self.id = id
+        self.series_name = comic_data['series']
+
+    def get_series_list(self):
+        pass
+
 class CsComic(CsSeries):
-     def __init__(self, comic_data):
+
+    def __init__(self, comic_data):
         self.id = id
         self.added_ts = comic_data['added_ts']
         self.characters =  comic_data['characters']
@@ -52,7 +70,7 @@ class CsComic(CsSeries):
         self.title = comic_data['title']
         self.volume = comic_data['volume']
         self.weblink = comic_data['weblink']
-        self.thumbnail = self._get_thumb(self.id)
+
     def _get_cs_thumb(self, id):
         src = "%s/comic/%d/thumbnail" % (base_url, int(id))
         response=urllib2.urlopen(src)
@@ -64,7 +82,7 @@ class CsComic(CsSeries):
 def cs_get_comic_info(comicid):
 
     src = "%s/comic/%d" % (base_url, int(comicid))
-    print src
+    logging.debug('src=%s' % src  )
     response=urllib2.urlopen(src)
     data = json.loads(response.read())
     json_string = json.dumps(data,sort_keys=True,indent=2)
@@ -75,9 +93,7 @@ def cs_get_comic_info(comicid):
 
 def gen_url(server_url,mode):
     api_key ="api_key="
-    user_name
-    pass_word
     urljoin(server_url,)
 
-if __name__ == "__main__":
-    cs_get_comic_info(1860)
+# if __name__ == "__main__":
+#     cs_get_comic_info(1860)
