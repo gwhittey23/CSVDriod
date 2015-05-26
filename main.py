@@ -13,17 +13,18 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.settings import SettingsWithSidebar
 from kivy.uix.image import Image
 from settingsjson import settings_json
+from kivy.logger import Logger
 import sys
 import os.path
 import urllib2
-import logging
-import logging.handlers
 from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.gridlayout import GridLayout
 from kivy.properties import ObjectProperty, StringProperty
+from csvdb.csvdroid_db import build_db
 from kivy.logger import Logger
+from csconnector import ComicStream
 
 class ButtonListItem(Button):
     id = StringProperty('')
@@ -48,14 +49,9 @@ class RootWidget(FloatLayout):
 
     manager = ObjectProperty()
 
-    def load_next_page(self, *args):
-        pass
-
-    def image_press(self):
-        print 'ok'
 
     def load_comic(self, *args):
-        id = 1754
+        id = 96
         page_count = 22
         base_url = App.get_running_app().config.get('Server', 'url')
         base_file = App.get_running_app().config.get('Server', 'storagedir')
@@ -87,7 +83,6 @@ class RootWidget(FloatLayout):
         scroll = ScrollView( size_hint=(1,1), do_scroll_x=True, do_scroll_y=False )
         scroll.add_widget(grid)
         self.pop = Popup(title='Pages', content=scroll, pos_hint ={'y': .0001},size_hint = (1,.23))
-
     def open_pagescroll_popup(self):
         self.pop.open()
 
@@ -124,6 +119,8 @@ class CRDroidApp(App):
         print 'user_data_dir = %s' %self.user_data_dir
         # setting = self.config.get('example', 'url')
         # print setting
+        if  os.path.isfile('cachedb.sqlite') == False:
+            build_db()
         return RootWidget()
     def build_config(self, config):
         config.setdefaults('Server',
@@ -135,25 +132,7 @@ class CRDroidApp(App):
                 'storagedir': self.user_data_dir
                 }
             )
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-        log_folder = App.get_running_app().user_data_dir + '/log'
-        print 'log_folder = %s' % log_folder
-        log_file = os.path.join(log_folder , "CSVDroid.log")
-        if not os.path.exists(os.path.dirname(log_file)):
-            os.makedirs(os.path.dirname(log_file))
-        fh = logging.handlers.RotatingFileHandler(log_file, maxBytes=1048576, backupCount=4, encoding="UTF8")
-        fh.setLevel(logging.DEBUG)
-        fh.setFormatter(formatter)
-        logger.addHandler(fh)
 
-        # By default only do info level to console
-        sh = logging.StreamHandler(sys.stdout)
-        sh.setLevel(logging.INFO)
-        sh.setFormatter(formatter)
-        logger.addHandler(sh)
-        logging.info("logging set")
     def build_settings(self, settings):
         settings.add_json_panel('Main Settings',
                                 self.config,
@@ -163,7 +142,10 @@ class CRDroidApp(App):
                          key, value):
         print config, section, key, value
 
-
+    def get_full_data(self):
+        comicstrem =ComicStream()
+        Logger.debug('getting full data')
+        comic_list = comicstrem.get_fulldata()
 
 if __name__ == '__main__':
     CRDroidApp().run()

@@ -36,6 +36,10 @@
 
                 BoxLayout:
                     Button:
+                        text: 'Get Full Data'
+                        font_size: 30
+                        on_release: app.get_full_data()
+                    Button:
                         text: 'Load Config'
                         font_size: 30
                         on_release: app.open_settings()

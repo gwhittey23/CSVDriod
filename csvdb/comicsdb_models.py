@@ -1,46 +1,45 @@
 from peewee import *
+import os
+database = SqliteDatabase('cachedb.sqlite', **{})
 
-database = SqliteDatabase('comics.db', **{})
 
-class UnknownField(object):
-    pass
+
 
 class BaseModel(Model):
     class Meta:
         database = database
 
 class Characters(BaseModel):
-    name = UnknownField(null=True, unique=True)  # VARCHAR
+    name = CharField(null=True, unique=True)  # VARCHAR
 
     class Meta:
         db_table = 'characters'
 
 class Comics(BaseModel):
     added_ts = DateTimeField(null=True)
-    comments = UnknownField(null=True)  # VARCHAR
+    comments = TextField(null=True)  # VARCHAR
     date = DateTimeField(null=True)
     day = IntegerField(null=True)
-    deleted_ts = DateTimeField(null=True)
-    file = UnknownField(null=True)  # VARCHAR
-    filesize = IntegerField(null=True)
-    folder = UnknownField(null=True)  # VARCHAR
-    hash = UnknownField(null=True)  # VARCHAR
-    imprint = UnknownField(null=True)  # VARCHAR
-    issue = UnknownField(null=True)  # VARCHAR
-    issue_num = UnknownField(null=True)  # FLOAT
+    imprint = CharField(null=True)  # VARCHAR
+    issue = CharField(null=True)  # VARCHAR
     lastread_page = IntegerField(null=True)
     lastread_ts = DateTimeField(null=True)
+    mod_ts = DateTimeField(null=True)
     month = IntegerField(null=True)
-    page_count = IntegerField(null=True)
-    publisher = UnknownField(null=True)  # VARCHAR
-    series = UnknownField(null=True)  # VARCHAR
-    title = UnknownField(null=True)  # VARCHAR
-    volume = IntegerField(null=True)
-    weblink = UnknownField(null=True)  # VARCHAR
     year = IntegerField(null=True)
+    page_count = IntegerField(null=True)
+    publisher = CharField(null=True)  # VARCHAR
+    series = CharField(null=True)  # VARCHAR
+    title = CharField(null=True)  # VARCHAR
+    volume = IntegerField(null=True)
+    weblink = CharField(null=True)  # VARCHAR
+    year = IntegerField(null=True)
+    comicstream_number = IntegerField(null=False, unique=True)
 
     class Meta:
         db_table = 'comics'
+
+
 
 class ComicsCharacters(BaseModel):
     character = ForeignKeyField(db_column='character_id', null=True, rel_model=Characters, to_field='id')
@@ -50,7 +49,7 @@ class ComicsCharacters(BaseModel):
         db_table = 'comics_characters'
 
 class Generictags(BaseModel):
-    name = UnknownField(null=True, unique=True)  # VARCHAR
+    name = CharField(null=True, unique=True)  # VARCHAR
 
     class Meta:
         db_table = 'generictags'
@@ -63,7 +62,7 @@ class ComicsGenerictags(BaseModel):
         db_table = 'comics_generictags'
 
 class Genres(BaseModel):
-    name = UnknownField(null=True, unique=True)  # VARCHAR
+    name = CharField(null=True, unique=True)  # VARCHAR
 
     class Meta:
         db_table = 'genres'
@@ -76,7 +75,7 @@ class ComicsGenres(BaseModel):
         db_table = 'comics_genres'
 
 class Locations(BaseModel):
-    name = UnknownField(null=True, unique=True)  # VARCHAR
+    name = CharField(null=True, unique=True)  # VARCHAR
 
     class Meta:
         db_table = 'locations'
@@ -89,7 +88,7 @@ class ComicsLocations(BaseModel):
         db_table = 'comics_locations'
 
 class Storyarcs(BaseModel):
-    name = UnknownField(null=True, unique=True)  # VARCHAR
+    name = CharField(null=True, unique=True)  # VARCHAR
 
     class Meta:
         db_table = 'storyarcs'
@@ -102,7 +101,7 @@ class ComicsStoryarcs(BaseModel):
         db_table = 'comics_storyarcs'
 
 class Teams(BaseModel):
-    name = UnknownField(null=True, unique=True)  # VARCHAR
+    name = CharField(null=True, unique=True)  # VARCHAR
 
     class Meta:
         db_table = 'teams'
@@ -115,13 +114,13 @@ class ComicsTeams(BaseModel):
         db_table = 'comics_teams'
 
 class Persons(BaseModel):
-    name = UnknownField(null=True, unique=True)  # VARCHAR
+    name = CharField(null=True, unique=True)  # VARCHAR
 
     class Meta:
         db_table = 'persons'
 
 class Roles(BaseModel):
-    name = UnknownField(null=True, unique=True)  # VARCHAR
+    name = CharField(null=True, unique=True)  # VARCHAR
 
     class Meta:
         db_table = 'roles'
@@ -134,13 +133,7 @@ class Credits(BaseModel):
     class Meta:
         db_table = 'credits'
         primary_key = CompositeKey('comic', 'person', 'role')
+        db_table = 'dbid'
+        db_table = 'deletedcomics'
+#
 
-
-import sys
-
-for cls in sys.modules[__name__].__dict__.values():
-    try:
-        if BaseModel in cls.__bases__:
-            cls.create_table()
-    except:
-        pass
