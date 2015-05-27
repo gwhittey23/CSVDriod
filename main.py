@@ -8,15 +8,11 @@ if DEBUG:
     Config.set('graphics', 'width', '600')
     Config.set('graphics', 'height', '1024')
 from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import Screen
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.settings import SettingsWithSidebar
 from kivy.uix.image import Image
 from settingsjson import settings_json
-from kivy.logger import Logger
-import sys
-import os.path
-import urllib2
 from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
@@ -24,7 +20,9 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.properties import ObjectProperty, StringProperty
 from csvdb.csvdroid_db import build_db
 from kivy.logger import Logger
-from csconnector import ComicStream
+from csconnector import ComicStream, CsComic
+import os.path
+import urllib2
 
 class ComicScreenBntListItem(Button):
     id = StringProperty('')
@@ -38,6 +36,21 @@ class ComicScreenBntListItem(Button):
         app.root.manager.current = 'comicscreen'
         app.root.ids['my_carousel'].index = int(button.id)
 
+class LibScreenBntListItem(Button):
+    id = StringProperty('')
+    image = StringProperty('')
+    title = StringProperty('')
+    label = StringProperty('')
+    pass
+
+    def click(button):
+        app = App.get_running_app()
+        app.root.manager.current = 'comicscreen'
+        print button.id
+        app.root.load_comic_screen(int(button.id))
+
+
+
 class ButtonList(GridLayout):
     pass
 
@@ -46,10 +59,12 @@ class RootWidget(FloatLayout):
        By default it is inherited from ScreenManager,
        you can use any other layout/widget depending on your usage.
     '''
-
     manager = ObjectProperty()
 
     def load_lib_screen(self, *args):
+        display_mode = 'Series' #default mode
+
+
         id = 96
         page_count = 22
         base_url = App.get_running_app().config.get('Server', 'url')
@@ -67,7 +82,7 @@ class RootWidget(FloatLayout):
                  #load images asynchronously
                  with open(fname,'w') as f:
                      f.write(response.read())
-            page_button = ButtonListItem(id=str(i), text='#Page' + str(i), size=(129, 200), size_hint=(None, None),
+            page_button = LibScreenBntListItem(id=str(96), text='#Page' + str(i), size=(129, 200), size_hint=(None, None),
                                          image=base_file + '/' + str(id) + '_P' + str(i) + '.jpg',
                                          )
             grid.add_widget(page_button)
@@ -77,27 +92,28 @@ class RootWidget(FloatLayout):
         self.ids['fl1'].add_widget(scroll)
 
 
-    def load_comic_screen(self, *args):
-        id = 96
-        page_count = 22
+    def load_comic_screen(self, comicstream_number):
+        Logger.debug(str(comicstream_number))
+
+        cscomic = CsComic(comicstream_number)
         base_url = App.get_running_app().config.get('Server', 'url')
         base_file = App.get_running_app().config.get('Server', 'storagedir')
         carousel = self.ids['my_carousel']
         grid = GridLayout(rows=1, size_hint=(None,None),spacing=10,padding=10)
         grid.bind(minimum_width=grid.setter('width'))
-        for i in range(0,page_count):
-            fname='%s/%d_P%d.jpg' %(base_file, id, i)
+        for i in range(0, cscomic.page_count):
+            fname='%s/%d_P%d.jpg' %(base_file, comicstream_number, i)
             if  os.path.isfile(fname) == False:
-                 src = "%s/comic/%d/page/%d" % (base_url, id, i)
-                 print src
-                 print 'getting cache copy %s from %s' % (fname, src)
-                 response=urllib2.urlopen(src)
-                 #load images asynchronously
-                 with open(fname,'w') as f:
-                     f.write(response.read())
-            page_button = ComicScreenBntListItem(id=str(i), text='#Page' + str(i), size=(129, 200), size_hint=(None, None),
-                                         image=base_file + '/' + str(id) + '_P' + str(i) + '.jpg',
-                                         )
+                src = "%s/comic/%d/page/%d" % (base_url, comicstream_number, i)
+                Logger.info('Getting Server info for %s' % comicstream_number)
+                response=urllib2.urlopen(src)
+                #load images asynchronously
+                with open(fname,'w') as f:
+                    f.write(response.read())
+            page_button = ComicScreenBntListItem(
+                            id=str(i), text='#Page' + str(i),
+                            size=(129, 200), size_hint=(None, None),
+                            image=base_file + '/' + str(comicstream_number) + '_P' + str(i) + '.jpg',)
             grid.add_widget(page_button)
             image = Image(source=fname, allow_stretch=True)
             print carousel.index
@@ -108,6 +124,7 @@ class RootWidget(FloatLayout):
         scroll = ScrollView( size_hint=(1,1), do_scroll_x=True, do_scroll_y=False )
         scroll.add_widget(grid)
         self.pop = Popup(title='Pages', content=scroll, pos_hint ={'y': .0001},size_hint = (1,.23))
+
     def open_pagescroll_popup(self):
         self.pop.open()
 

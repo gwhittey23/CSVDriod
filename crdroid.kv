@@ -65,7 +65,7 @@
                         text: 'Comic Screen'
                         font_size: 30
                         on_release: root.manager.current = 'comicscreen'
-                        on_release: app.root.load_comic_screen()
+                        on_release: app.root.load_comic_screen(376)
                         on_release: root.pos_hint =  {'top': 1}
         Screen:
             name: 'libraryScreen'
@@ -76,7 +76,7 @@
                 ActionView:
                     use_separator: True
                     ActionPrevious:
-                        title: 'ComicStreamer Reader For Driod'
+                        title: 'Library'
                         with_previous: False
                     ActionOverflow:
                     ActionButton:
@@ -97,8 +97,14 @@
             FloatLayout:
                 id:fl1
                 Label:
-                    text:'hi'
+                    text:''
                     color: (255,0,255,1)
+            Button:
+                pos_hint: {'x': .85, 'y': .95}
+                text: "Back to Main Page"
+                size_hint: .2, .05
+                on_release: root.manager.current = 'MainScreen'
+                opacity: 1
             Button:
                 pos_hint: {'x': .01, 'y': .0001}
                 text: "Prev"
@@ -115,7 +121,7 @@
                 pos_hint: {'x': .3, 'y': .0001}
                 text: 'Open Page Scroll'
                 size_hint: .4, .05
-                opacity: 0
+                opacity: 1
                 on_release: app.root.open_pagescroll_popup()
 
         ComicScreen:
@@ -127,6 +133,14 @@
                 Carousel:
                     id: my_carousel
                     size_hint: 1,1
+
+                Button:
+                    pos_hint: {'x': .85, 'y': .95}
+                    text: "Back to Library"
+                    size_hint: .2, .05
+                    on_release: root.manager.current = 'libraryScreen'
+                    opacity: 1
+
                 Button:
                     pos_hint: {'x': .01, 'y': .0001}
                     text: "Prev"
@@ -143,7 +157,7 @@
                     pos_hint: {'x': .3, 'y': .0001}
                     text: 'Open Page Scroll'
                     size_hint: .4, .05
-                    opacity: 0
+                    opacity: 1
                     on_release: app.root.open_pagescroll_popup()
 
 <ComicScreenBntListItem@Button>:
@@ -164,7 +178,7 @@
             source: root.image
             size: 129, 200
             valign: "middle"
-<libraryScreen@Button>:
+<LibScreenBntListItem@Button>:
     wid: self.wid
     image: self.image
     title: self.title

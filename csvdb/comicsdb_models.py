@@ -34,7 +34,7 @@ class Comics(BaseModel):
     volume = IntegerField(null=True)
     weblink = CharField(null=True)  # VARCHAR
     year = IntegerField(null=True)
-    comicstream_number = IntegerField(null=False, unique=True)
+    comicstream_number = PrimaryKeyField(null=False, unique=True)
 
     class Meta:
         db_table = 'comics'
@@ -43,7 +43,7 @@ class Comics(BaseModel):
 
 class ComicsCharacters(BaseModel):
     character = ForeignKeyField(db_column='character_id', null=True, rel_model=Characters, to_field='id')
-    comic = ForeignKeyField(db_column='comic_id', null=True, rel_model=Comics, to_field='id')
+    comic = ForeignKeyField(db_column='comic_comicstream_number', null=True, rel_model=Comics, to_field='comicstream_number')
 
     class Meta:
         db_table = 'comics_characters'
@@ -53,9 +53,9 @@ class Generictags(BaseModel):
 
     class Meta:
         db_table = 'generictags'
-
+0
 class ComicsGenerictags(BaseModel):
-    comic = ForeignKeyField(db_column='comic_id', null=True, rel_model=Comics, to_field='id')
+    comic = ForeignKeyField(db_column='comic_comicstream_number', null=True, rel_model=Comics, to_field='comicstream_number')
     generictags = ForeignKeyField(db_column='generictags_id', null=True, rel_model=Generictags, to_field='id')
 
     class Meta:
@@ -68,7 +68,7 @@ class Genres(BaseModel):
         db_table = 'genres'
 
 class ComicsGenres(BaseModel):
-    comic = ForeignKeyField(db_column='comic_id', null=True, rel_model=Comics, to_field='id')
+    comic = ForeignKeyField(db_column='comic_comicstream_number', null=True, rel_model=Comics, to_field='comicstream_number')
     genre = ForeignKeyField(db_column='genre_id', null=True, rel_model=Genres, to_field='id')
 
     class Meta:
@@ -81,7 +81,7 @@ class Locations(BaseModel):
         db_table = 'locations'
 
 class ComicsLocations(BaseModel):
-    comic = ForeignKeyField(db_column='comic_id', null=True, rel_model=Comics, to_field='id')
+    comic = ForeignKeyField(db_column='comic_comicstream_number', null=True, rel_model=Comics, to_field='comicstream_number')
     location = ForeignKeyField(db_column='location_id', null=True, rel_model=Locations, to_field='id')
 
     class Meta:
@@ -94,7 +94,7 @@ class Storyarcs(BaseModel):
         db_table = 'storyarcs'
 
 class ComicsStoryarcs(BaseModel):
-    comic = ForeignKeyField(db_column='comic_id', null=True, rel_model=Comics, to_field='id')
+    comic = ForeignKeyField(db_column='comic_comicstream_number', null=True, rel_model=Comics, to_field='comicstream_number')
     storyarc = ForeignKeyField(db_column='storyarc_id', null=True, rel_model=Storyarcs, to_field='id')
 
     class Meta:
@@ -107,7 +107,7 @@ class Teams(BaseModel):
         db_table = 'teams'
 
 class ComicsTeams(BaseModel):
-    comic = ForeignKeyField(db_column='comic_id', null=True, rel_model=Comics, to_field='id')
+    comic = ForeignKeyField(db_column='comic_comicstream_number', null=True, rel_model=Comics, to_field='comicstream_number')
     team = ForeignKeyField(db_column='team_id', null=True, rel_model=Teams, to_field='id')
 
     class Meta:
@@ -126,7 +126,7 @@ class Roles(BaseModel):
         db_table = 'roles'
 
 class Credits(BaseModel):
-    comic = ForeignKeyField(db_column='comic_id', rel_model=Comics, to_field='id')
+    comic = ForeignKeyField(db_column='comic_comicstream_number', rel_model=Comics, to_field='comicstream_number')
     person = ForeignKeyField(db_column='person_id', rel_model=Persons, to_field='id')
     role = ForeignKeyField(db_column='role_id', rel_model=Roles, to_field='id')
 
@@ -135,5 +135,7 @@ class Credits(BaseModel):
         primary_key = CompositeKey('comic', 'person', 'role')
         db_table = 'dbid'
         db_table = 'deletedcomics'
-#
+
+class SeriesList(BaseModel):
+    name = CharField(null=True)
 
