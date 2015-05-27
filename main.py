@@ -55,10 +55,7 @@ class ButtonList(GridLayout):
     pass
 
 class RootWidget(FloatLayout):
-    '''This the class representing your root widget.
-       By default it is inherited from ScreenManager,
-       you can use any other layout/widget depending on your usage.
-    '''
+
     manager = ObjectProperty()
 
     def load_lib_screen(self, *args):
