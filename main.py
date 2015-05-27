@@ -1,4 +1,4 @@
-__version__ = '1.004'
+__version__ = '1.006'
 DEBUG = True
 import kivy
 kivy.require('1.8.0')

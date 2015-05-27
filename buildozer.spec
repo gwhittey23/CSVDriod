@@ -32,8 +32,8 @@ version.filename = %(source.dir)s/main.py
 # version = 1.2.0
 
 # (list) Application requirements
-# comma seperated e.g. requirements = sqlite3,kivy
-requirements = kivy
+# comma seperated e.g. requirements = sqlite3,kivy,peewee
+requirements = kivy,sqlite3,requests,peewee
 
 # (list) Garden requirements
 #garden_requirements =magnet,navigationdrawer

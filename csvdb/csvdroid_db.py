@@ -17,7 +17,6 @@ def add_update_comic(cls):
                 page_count=cls.page_count,
                 publisher=cls.publisher,
                 series=cls.series,
-                teams=cls.teams,
                 title=cls.title,
                 volume=cls.volume,
                 mod_ts = cls.mod_ts,
@@ -25,6 +24,8 @@ def add_update_comic(cls):
                 year=cls.year,
                 weblink=cls.weblink,
                 page_cout=cls.page_count
+#                teams=cls.teams,
+
                 )
             if not cls.storyarcs == None:
                 add_story_arcs(new_comic.comicstream_number, cls.storyarcs)
@@ -40,7 +41,6 @@ def add_update_comic(cls):
         new_comic.page_count=cls.page_count
         new_comic.publisher=cls.publisher
         new_comic.series=cls.series
-        #new_comic.teams=cls.teams
         new_comic.title=cls.title
         new_comic.volume=cls.volume
         new_comic.mod_ts = cls.mod_ts
@@ -48,6 +48,7 @@ def add_update_comic(cls):
         new_comic.year=cls.year
         new_comic.weblink=cls.weblink
         new_comic.page_count=cls.page_count
+        #new_comic.teams=cls.teams
         new_comic.save()
 
         if not cls.storyarcs == None:

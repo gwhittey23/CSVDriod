@@ -76,13 +76,14 @@ class CsComic(object):
         print 'get thumb'
         src = "%s/comic/%d/thumbnail" % (self.base_url, int(self.comicstream_number))
         fname='%s/%d_thumb.jpg' %(self.base_file, self.comicstream_number)
-        try:
-            r = requests.get(src)
-            r.raise_for_status()
-        except HTTPError:
-            Logger.critical('HTTPerror for %s' % src )
-        else:
-            with open(fname,'w') as f:
+        if  os.path.isfile(fname) == False:
+            try:
+                r = requests.get(src)
+                r.raise_for_status()
+            except HTTPError:
+                Logger.critical('HTTPerror for %s' % src )
+            else:
+                with open(fname,'w') as f:
                  f.write(r.content)
         return fname
     def do_json_setup(self, data):
