@@ -1,4 +1,4 @@
-__version__ = '1.007'
+__version__ = '1.0075'
 DEBUG = True
 import kivy
 kivy.require('1.8.0')
@@ -99,7 +99,8 @@ class RootWidget(FloatLayout):
 
         cscomic = CsComic(comicstream_number)
         base_url = App.get_running_app().config.get('Server', 'url')
-        base_dir = App.get_running_app().config.get('Server', 'storagedir')
+        #base_dir = App.get_running_app().config.get('Server', 'storagedir')
+        base_dir = 'images'
         carousel = self.ids['my_carousel']
         grid = GridLayout(rows=1, size_hint=(None,None),spacing=5,padding_horizontal=5,id='outtergrd')
         grid.bind(minimum_width=grid.setter('width'))
@@ -110,7 +111,7 @@ class RootWidget(FloatLayout):
             fname='%s/%d/%d_P%d.jpg' %(base_dir, comicstream_number, comicstream_number, i)
             print fname
             if not os.path.isfile(fname):#file not there let us get it.
-                src = '%s/comic/%d/page/%d' % (base_url, comicstream_number, i)
+                src = '%s/comic/%d/page/%d?max?max_height=1200#.jpg' % (base_url, comicstream_number, i)
                 try:
                     r = requests.get(src)
                     r.raise_for_status()
@@ -181,8 +182,7 @@ class CRDroidApp(App):
         if  os.path.isfile('cachedb.sqlite') == False:
             build_db()
         base_dir =  App.get_running_app().config.get('Server', 'storagedir')
-        if not os.path.exists(base_dir):
-            os.makedirs(base_dir)
+
         return RootWidget()
 
     def build_config(self, config):
