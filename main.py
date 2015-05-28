@@ -1,4 +1,4 @@
-__version__ = '1.00165'
+__version__ = '1.00167'
 DEBUG = True
 import kivy
 kivy.require('1.8.0')
@@ -19,9 +19,11 @@ from kivy.uix.scrollview import ScrollView
 from kivy.uix.gridlayout import GridLayout
 from kivy.properties import ObjectProperty, StringProperty
 from csvdb.csvdroid_db import build_db
+from csconnector import CsComic,ComicStream
 from kivy.logger import Logger
 import os.path
 import urllib2
+
 
 class ComicScreenBntListItem(Button):
     id = StringProperty('')
@@ -93,15 +95,18 @@ class RootWidget(FloatLayout):
         page_count = 22
         comicstream_number = int(self.ids['txt1'].text)
         id = '96'
-        #cscomic = CsComic(comicstream_number)
+        cscomic = CsComic(comicstream_number)
         base_url = App.get_running_app().config.get('Server', 'url')
-        base_file = 'images'
+        base_dir = 'images'
         #base_file = App.get_running_app().config.get('Server', 'storagedir')
         carousel = self.ids['my_carousel']
-        # grid = GridLayout(rows=1, size_hint=(None,None),spacing=10,padding=10)
-        # grid.bind(minimum_width=grid.setter('width'))
+        grid = GridLayout(rows=1, size_hint=(None,None),spacing=5,padding_horizontal=5,id='outtergrd')
+        grid.bind(minimum_width=grid.setter('width'))
         for i in range(0, page_count):
-            fname='%s/%d_P%d.jpg' %(base_file, comicstream_number, i)
+            comic_dir = '%s/%s' %(base_dir, comicstream_number)
+            if not os.path.exists(comic_dir):
+                os.makedirs(comic_dir)
+            fname='%s/%d/%d_P%d.jpg' %(base_dir, comicstream_number, comicstream_number, i)
             if  os.path.isfile(fname) == False:
                 src = "%s/comic/%d/page/%d?max_height=1200" % (base_url, comicstream_number, i)
                 Logger.info('Getting Server info for %s' % comicstream_number)
@@ -109,20 +114,27 @@ class RootWidget(FloatLayout):
                 #load images asynchronously
                 with open(fname,'w') as f:
                     f.write(response.read())
-            # page_button = ComicScreenBntListItem(
-            #                 id=str(i), text='#Page' + str(i),
-            #                 size=(129, 200), size_hint=(None, None),
-            #                 image=base_file + '/' + str(comicstream_number) + '_P' + str(i) + '.jpg',)
-            # grid.add_widget(page_button)
+            inner_grid = GridLayout(cols=1, rows =2,id='inner_grid'+str(i),size_hint=(None,None),size=(130,200),
+                                    spacing=5)
+            page_button = ComicScreenBntListItem(
+                            id=str(i), text='#Page' + str(i),
+                            size=(130, 200), size_hint=(None, None),
+                            image=base_dir + '/' + str(comicstream_number) + '/' + str(comicstream_number) +
+                            '_P' + str(i) + '.jpg',)
+            inner_grid.add_widget(page_button)
+            smbutton = Button(size_hint=(None,None),size=(10,10),text='P%s'%str(i+1),background_color=(0,0,0,0))
+
+            inner_grid.add_widget(smbutton)
+            grid.add_widget(inner_grid)
             image = Image(source=fname, allow_stretch=True)
             print carousel.index
             carousel.add_widget(image)
         carousel.pos_hit = {'top':1}
 
         #Build the popup scroll of page buttons
-        # scroll = ScrollView( size_hint=(1,1), do_scroll_x=True, do_scroll_y=False )
-        # scroll.add_widget(grid)
-        # self.pop = Popup(title='Pages', content=scroll, pos_hint ={'y': .0001},size_hint = (1,.23))
+        scroll = ScrollView( size_hint=(1,1), do_scroll_x=True, do_scroll_y=False )
+        scroll.add_widget(grid)
+        self.pop = Popup(title='Pages', content=scroll, pos_hint ={'y': .0001},size_hint = (1,.33))
 
     def open_pagescroll_popup(self):
         self.pop.open()
@@ -160,8 +172,8 @@ class CRDroidApp(App):
         print 'user_data_dir = %s' %self.user_data_dir
         # setting = self.config.get('example', 'url')
         # print setting
-        # if  os.path.isfile('cachedb.sqlite') == False:
-        #     build_db()
+        if  os.path.isfile('cachedb.sqlite') == False:
+            build_db()
         return RootWidget()
     def build_config(self, config):
         config.setdefaults('Server',
