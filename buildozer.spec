@@ -1,28 +1,28 @@
 [app]
 
 # (str) Title of your application
-title = CSVDroid
+title = CSVDroid2
 
 # (str) Package name
-package.name = CSVDroid
+package.name = CSVDroid2
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = com.kivy.CSVDroid
-
+#package.domain = org.kivy.CSVDroid2
+package.domain = com.andriod.crdroid
 # (str) Source code where the main.py live
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,json
+source.include_exts = py,png,jpg,kv,atlas,json,images
 
 # (list) Source files to exclude (let empty to not exclude anything)
 #source.exclude_exts = spec
 
 # (list) List of directory to exclude (let empty to not exclude anything)
-source.exclude_dirs = tests, bin, jotpad, images
+source.exclude_dirs = tests, bin, jotpad
 
 # (list) List of exclusions using pattern matching
-source.exclude_patterns = license,images/*/*.jpg
+#source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
 version.regex = __version__ = ['"](.*)['"]

@@ -1,15 +1,3 @@
-<SidePanel>:
-    orientation: 'vertical'
-    spacing: 1
-
-    MenuItem:
-        text: 'voce uno'
-
-    MenuItem:
-        text: 'voce due'
-
-    MenuItem:
-        text: 'comic screen'
 
 <RootWidget>:
     manager: manager
@@ -50,6 +38,9 @@
                 Label:
                     text: 'first screen!'
                     font_size: 30
+                TextInput:
+                    id:txt1
+                    size_hint: .2,.07
 
                 BoxLayout:
                     Button:
@@ -65,7 +56,7 @@
                         text: 'Comic Screen'
                         font_size: 30
                         on_release: root.manager.current = 'comicscreen'
-                        on_release: app.root.load_comic_screen(376)
+                        on_release: app.root.load_comic_screen(2521)
                         on_release: root.pos_hint =  {'top': 1}
         Screen:
             name: 'libraryScreen'
