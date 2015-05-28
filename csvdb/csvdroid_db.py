@@ -56,7 +56,6 @@ def add_update_comic(cls):
             Logger.debug('started story %s' %cls.storyarcs)
 
 def add_story_arcs(comicstream_number, storyarcs):
-    print 'storyarc'
     for story in storyarcs:
         new_story, created = Storyarcs.get_or_create(name=story)
         acomic = Comics.get(Comics.comicstream_number==comicstream_number)

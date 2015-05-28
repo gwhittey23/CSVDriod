@@ -130,7 +130,7 @@
                     text: "Back to Library"
                     size_hint: .2, .05
                     on_release: root.manager.current = 'libraryScreen'
-                    opacity: 1
+                    opacity: 0
 
                 Button:
                     pos_hint: {'x': .01, 'y': .0001}
@@ -148,7 +148,7 @@
                     pos_hint: {'x': .3, 'y': .0001}
                     text: 'Open Page Scroll'
                     size_hint: .4, .05
-                    opacity: 1
+                    opacity: 0
                     on_release: app.root.open_pagescroll_popup()
 
 <ComicScreenBntListItem@Button>:
@@ -163,12 +163,12 @@
         pos: self.parent.pos        # match the button's position
         padding: 0
         spacing: 10
-
         Image:
             size_hint: None, 1
             source: root.image
-            size: 129, 200
-            valign: "middle"
+            size: 130, 200
+            valign: "top"
+
 <LibScreenBntListItem@Button>:
     wid: self.wid
     image: self.image
