@@ -1,4 +1,4 @@
-__version__ = '1.006'
+__version__ = '1.007'
 DEBUG = True
 import kivy
 kivy.require('1.8.0')
@@ -20,16 +20,20 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.properties import ObjectProperty, StringProperty
 from csvdb.csvdroid_db import build_db
 from kivy.logger import Logger
+from kivy.uix.label import Label
+from kivy.uix.stacklayout import StackLayout
 from csconnector import ComicStream, CsComic
 import os.path
 import urllib2
+import requests
+from requests.exceptions import HTTPError
+
 
 class ComicScreenBntListItem(Button):
     id = StringProperty('')
     image = StringProperty('')
     title = StringProperty('')
     label = StringProperty('')
-    pass
 
     def click(button):
         app = App.get_running_app()
@@ -80,7 +84,7 @@ class RootWidget(FloatLayout):
                  with open(fname,'w') as f:
                      f.write(response.read())
             page_button = LibScreenBntListItem(id=str(96), text='#Page' + str(i), size=(129, 200), size_hint=(None, None),
-                                         image=base_file + '/' + str(id) + '_P' + str(i) + '.jpg',
+                                         image=base_file + '/' + str(id) + '_P' + str(i) + '.jpg',label='P10'
                                          )
             grid.add_widget(page_button)
         scroll = ScrollView( size_hint=(.9,.85), do_scroll_y=True, do_scroll_x=False,
@@ -88,39 +92,55 @@ class RootWidget(FloatLayout):
         scroll.add_widget(grid)
         self.ids['fl1'].add_widget(scroll)
 
-
+        #This loads comciscreen and will first check storage dir
+        # and see if file is there if not fetch it from server
     def load_comic_screen(self, comicstream_number):
         Logger.debug(str(comicstream_number))
 
         cscomic = CsComic(comicstream_number)
         base_url = App.get_running_app().config.get('Server', 'url')
-        base_file = App.get_running_app().config.get('Server', 'storagedir')
+        base_dir = App.get_running_app().config.get('Server', 'storagedir')
         carousel = self.ids['my_carousel']
-        grid = GridLayout(rows=1, size_hint=(None,None),spacing=10,padding=10)
+        grid = GridLayout(rows=1, size_hint=(None,None),spacing=5,padding_horizontal=5,id='outtergrd')
         grid.bind(minimum_width=grid.setter('width'))
         for i in range(0, cscomic.page_count):
-            fname='%s/%d_P%d.jpg' %(base_file, comicstream_number, i)
-            if  os.path.isfile(fname) == False:
-                src = "%s/comic/%d/page/%d" % (base_url, comicstream_number, i)
-                Logger.info('Getting Server info for %s' % comicstream_number)
-                response=urllib2.urlopen(src)
-                #load images asynchronously
-                with open(fname,'w') as f:
-                    f.write(response.read())
+            comic_dir = '%s/%s' %(base_dir, comicstream_number)
+            if not os.path.exists(comic_dir):
+                os.makedirs(comic_dir)
+            fname='%s/%d/%d_P%d.jpg' %(base_dir, comicstream_number, comicstream_number, i)
+            print fname
+            if not os.path.isfile(fname):#file not there let us get it.
+                src = '%s/comic/%d/page/%d' % (base_url, comicstream_number, i)
+                try:
+                    r = requests.get(src)
+                    r.raise_for_status()
+                except HTTPError:
+                    Logger.critical('HTTPerror for %s' % src )
+                else:
+                    with open(fname,'w') as f:
+                        f.write(r.content)
+
+            inner_grid = GridLayout(cols=1, rows =2,id='inner_grid'+str(i),size_hint=(None,None),size=(130,200),
+                                    spacing=5)
             page_button = ComicScreenBntListItem(
                             id=str(i), text='#Page' + str(i),
-                            size=(129, 200), size_hint=(None, None),
-                            image=base_file + '/' + str(comicstream_number) + '_P' + str(i) + '.jpg',)
-            grid.add_widget(page_button)
+                            size=(130, 200), size_hint=(None, None),
+                            image=base_dir + '/' + str(comicstream_number) + '/' + str(comicstream_number) +
+                            '_P' + str(i) + '.jpg',)
+            inner_grid.add_widget(page_button)
+            smbutton = Button(size_hint=(None,None),size=(10,10),text='P%s'%str(i+1),background_color=(0,0,0,0))
+
+            inner_grid.add_widget(smbutton)
+            grid.add_widget(inner_grid)
             image = Image(source=fname, allow_stretch=True)
             print carousel.index
             carousel.add_widget(image)
         carousel.pos_hit = {'top':1}
 
         #Build the popup scroll of page buttons
-        scroll = ScrollView( size_hint=(1,1), do_scroll_x=True, do_scroll_y=False )
+        scroll = ScrollView( size_hint=(1, 1), do_scroll_x=True, do_scroll_y=False )
         scroll.add_widget(grid)
-        self.pop = Popup(title='Pages', content=scroll, pos_hint ={'y': .0001},size_hint = (1,.23))
+        self.pop = Popup(title='Pages', content=scroll, pos_hint={'y': .0002}, size_hint=(1, .33))
 
     def open_pagescroll_popup(self):
         self.pop.open()
@@ -160,7 +180,11 @@ class CRDroidApp(App):
         # print setting
         if  os.path.isfile('cachedb.sqlite') == False:
             build_db()
+        base_dir =  App.get_running_app().config.get('Server', 'storagedir')
+        if not os.path.exists(base_dir):
+            os.makedirs(base_dir)
         return RootWidget()
+
     def build_config(self, config):
         config.setdefaults('Server',
                 {

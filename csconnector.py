@@ -33,10 +33,10 @@ class ComicStream():
             Logger.debug("get_fulldata started using")
             'brake data into sinle comics'
             for item in data['comics']:
-                print item['id']
                 comic = CsComic(item)
                 add_update_comic(comic)
                 #get Thumbnails
+                comic._get_cs_thumb()
         #get Series list
         src = "%s/entities/series" % (self.base_url)
         try:
@@ -56,6 +56,7 @@ class CsSeries(object):
     def __init__(self, comic_data):
         self.id = id
         self.series_name = comic_data['series']
+
     def get_series_list(self):
         pass
 
@@ -65,18 +66,19 @@ class CsComic(object):
     def __init__(self, data):
         self.app_config = App.get_running_app()
         self.base_url = self.app_config.config.get('Server', 'url')
-        self.base_file = self.app_config.config.get('Server', 'storagedir')
+        self.base_dir = self.app_config.config.get('Server', 'storagedir')
         if isinstance( data, int ):
             self.do_db_setup(data)
         else:
           self.do_json_setup(data)#add just to clean up class
-        self.thumb = self._get_cs_thumb()
 
     def _get_cs_thumb(self):
-        print 'get thumb'
         src = "%s/comic/%d/thumbnail" % (self.base_url, int(self.comicstream_number))
-        fname='%s/%d_thumb.jpg' %(self.base_file, self.comicstream_number)
-        if  os.path.isfile(fname) == False:
+        comic_dir = '%s/%s' %(self.base_dir, self.comicstream_number)
+        if not os.path.exists(comic_dir):
+            os.makedirs(comic_dir)
+        fname='%s/%d_thumb.jpg' %(comic_dir, self.comicstream_number)
+        if not os.path.isfile(fname):
             try:
                 r = requests.get(src)
                 r.raise_for_status()
@@ -84,8 +86,10 @@ class CsComic(object):
                 Logger.critical('HTTPerror for %s' % src )
             else:
                 with open(fname,'w') as f:
-                 f.write(r.content)
+                    f.write(r.content)
+        Logger.debug('file is %s' % fname)
         return fname
+
     def do_json_setup(self, data):
         comic_data = data
         self.comicstream_number = comic_data['id']
