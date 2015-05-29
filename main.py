@@ -22,8 +22,16 @@ from csvdb.csvdroid_db import build_db
 from csconnector import CsComic,ComicStream
 from kivy.logger import Logger
 import os.path
-import urllib2
+import requests
+from requests.exceptions import HTTPError
 
+
+
+class ComicScreen(Screen):
+    pass
+
+class SecondScreen(Screen):
+    pass
 
 class ComicScreenBntListItem(Button):
     id = StringProperty('')
@@ -61,13 +69,11 @@ class RootWidget(FloatLayout):
 
     def load_lib_screen(self, *args):
         display_mode = 'Series' #default mode
-
-
         id = 96
         page_count = 22
         base_url = App.get_running_app().config.get('Server', 'url')
         base_file = App.get_running_app().config.get('Server', 'storagedir')
-        grid = GridLayout(cols=3, size_hint=(None,None),spacing=10,padding=10, pos_hint = {.2,.2})
+        grid = GridLayout(cols=4, size_hint=(None,None),spacing=(10,50),padding=10, pos_hint = {.5,.2})
         grid.bind(minimum_height=grid.setter('height'))
 
         for i in range(0,page_count):
@@ -80,17 +86,26 @@ class RootWidget(FloatLayout):
                  #load images asynchronously
                  with open(fname,'w') as f:
                      f.write(response.read())
+
+            inner_grid = GridLayout(cols=1, rows =2,id='inner_grid'+str(i),size_hint=(None,None),size=(130,200),spacing=5)
             page_button = LibScreenBntListItem(id=str(96), text='#Page' + str(i), size=(129, 200), size_hint=(None, None),
                                          image=base_file + '/' + str(id) + '_P' + str(i) + '.jpg',
                                          )
-            grid.add_widget(page_button)
-        scroll = ScrollView( size_hint=(.9,.85), do_scroll_y=True, do_scroll_x=False,
-                             pos_hint={'center_x': .6, 'center_y': .5} )
+            inner_grid.add_widget(page_button)
+            smbutton = Button(size_hint=(None,None),size=(10,10),text='P%s'%str(i+1),background_color=(0,0,0,0))
+            inner_grid.add_widget(smbutton)
+            grid.add_widget(inner_grid)
+
+
+        scroll = ScrollView( size_hint=(.95,.85), do_scroll_y=True, do_scroll_x=False,
+                             pos_hint={'center_x': .5, 'center_y': .5} )
         scroll.add_widget(grid)
         self.ids['fl1'].add_widget(scroll)
 
 
     def load_comic_screen(self, comicstream_number):
+        carousel = self.ids['my_carousel']
+        carousel.clear_widgets()
         Logger.debug(str(comicstream_number))
         page_count = 22
         comicstream_number = int(self.ids['txt1'].text)
@@ -99,7 +114,7 @@ class RootWidget(FloatLayout):
         base_url = App.get_running_app().config.get('Server', 'url')
         base_dir = 'images'
         #base_file = App.get_running_app().config.get('Server', 'storagedir')
-        carousel = self.ids['my_carousel']
+
         grid = GridLayout(rows=1, size_hint=(None,None),spacing=5,padding_horizontal=5,id='outtergrd')
         grid.bind(minimum_width=grid.setter('width'))
         for i in range(0, page_count):
@@ -109,11 +124,17 @@ class RootWidget(FloatLayout):
             fname='%s/%d/%d_P%d.jpg' %(base_dir, comicstream_number, comicstream_number, i)
             if  os.path.isfile(fname) == False:
                 src = "%s/comic/%d/page/%d?max_height=1200" % (base_url, comicstream_number, i)
+                print src
                 Logger.info('Getting Server info for %s' % comicstream_number)
-                response=urllib2.urlopen(src)
+                try:
+                    r = requests.get(src)
+                    r.raise_for_status()
+                except HTTPError:
+                    Logger.critical('HTTPerror for %s' % src )
+                else:
                 #load images asynchronously
-                with open(fname,'w') as f:
-                    f.write(response.read())
+                    with open(fname,'w') as f:
+                        f.write(r.content)
             inner_grid = GridLayout(cols=1, rows =2,id='inner_grid'+str(i),size_hint=(None,None),size=(130,200),
                                     spacing=5)
             page_button = ComicScreenBntListItem(
@@ -121,6 +142,7 @@ class RootWidget(FloatLayout):
                             size=(130, 200), size_hint=(None, None),
                             image=base_dir + '/' + str(comicstream_number) + '/' + str(comicstream_number) +
                             '_P' + str(i) + '.jpg',)
+            
             inner_grid.add_widget(page_button)
             smbutton = Button(size_hint=(None,None),size=(10,10),text='P%s'%str(i+1),background_color=(0,0,0,0))
 
@@ -139,33 +161,9 @@ class RootWidget(FloatLayout):
     def open_pagescroll_popup(self):
         self.pop.open()
 
-class ComicScreen(Screen):
-    pass
-
-class SecondScreen(Screen):
-    pass
 
 class CRDroidApp(App):
 
-    '''This is the main class of your app.
-       Define any app wide entities here.
-       This class can be accessed anywhere inside the kivy app as,
-       in python::
-
-         app = App.get_running_app()
-         print (app.title)
-
-       in kv language::
-
-         on_release: print(app.title)
-       Name of the .kv file that is auto-loaded is derived from the name
-       of this class::
-
-         MainApp = main.kv
-         MainClass = mainclass.kv
-
-       The App part is auto removed and the whole name is lowercased.
-    '''
     def build(self):
         self.settings_cls = SettingsWithSidebar
         self.use_kivy_settings = True
