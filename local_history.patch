@@ -1,0 +1,131 @@
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- main.py	(revision )
++++ main.py	(revision )
+@@ -11,13 +11,12 @@
+ from kivy.uix.screenmanager import Screen
+ from kivy.uix.floatlayout import FloatLayout
+ from kivy.uix.settings import SettingsWithSidebar
+-from kivy.uix.image import Image, AsyncImage
++from kivy.uix.image import Image
+ from settingsjson import settings_json
+ from kivy.uix.popup import Popup
+ from kivy.uix.button import Button
+ from kivy.uix.scrollview import ScrollView
+ from kivy.uix.gridlayout import GridLayout
+-from kivy.uix.boxlayout import BoxLayout
+ from kivy.properties import ObjectProperty, StringProperty
+ from csvdb.csvdroid_db import build_db
+ from csconnector import CsComic,ComicStream
+@@ -123,74 +122,35 @@
+             if not os.path.exists(comic_dir):
+                 os.makedirs(comic_dir)
+             fname='%s/%d/%d_P%d.jpg' %(base_dir, comicstream_number, comicstream_number, i)
+            # if  os.path.isfile(fname) == False:
+            if  os.path.isfile(fname) == False:
+            src = "%s/comic/%d/page/%d?max_height=1200" % (base_url, comicstream_number, i)
+            print src
+            Logger.info('Getting Server info for %s' % comicstream_number)
+                src = "%s/comic/%d/page/%d?max_height=1200" % (base_url, comicstream_number, i)
+                print src
+                Logger.info('Getting Server info for %s' % comicstream_number)
+                # try:
+                #     r = requests.get(src)
+                #     r.raise_for_status()
+                # except HTTPError:
+                #     Logger.critical('HTTPerror for %s' % src )
+                # else:
+                # #load images asynchronously
+                #     with open(fname,'w') as f:
+                #         f.write(r.content)
+            image = AsyncImage(source=src, allow_stretch=True)
+            carousel.add_widget(image)
+            img2 = AsyncImage(source=src, allow_stretch=True,size=(130, 200),valign =  "top", )
+                try:
+                    r = requests.get(src)
+                    r.raise_for_status()
+                except HTTPError:
+                    Logger.critical('HTTPerror for %s' % src )
+                else:
+                #load images asynchronously
+                    with open(fname,'w') as f:
+                        f.write(r.content)
+             inner_grid = GridLayout(cols=1, rows =2,id='inner_grid'+str(i),size_hint=(None,None),size=(130,200),
+                                     spacing=5)
+            page_button = Button(size=(130, 200), size_hint=(None, None))
+            page_box = BoxLayout(size = self.parent.size,orientation="horizontal",pos=self.parent.pos,
+                              padding = 0, spacing=10,id=i)
+            page_box.add_widget(img2)
+            page_button.add_widget(page_box)
+            page_button = ComicScreenBntListItem(
+                            id=str(i), text='#Page' + str(i),
+                            size=(130, 200), size_hint=(None, None),
+                            image=base_dir + '/' + str(comicstream_number) + '/' + str(comicstream_number) +
+                            '_P' + str(i) + '.jpg',)
+
+            
+            # page_button = ComicScreenBntListItem(
+            #                 id=str(i), text='#Page' + str(i),
+            #                 size=(130, 200), size_hint=(None, None))
+
+            page_button.add_widget(img2)
+             inner_grid.add_widget(page_button)
+            smbutton = Button(size_hint=(None,None),size=(10,10),text='P%s'%str(i+1),background_color=(0,0,0,0))
+ 
+    # ComicScreenBntListItem@Button>:
+        # wid: self.wid
+    # image: self.image
+    # title: self.title
+    # label: self.label
+    # on_press: self.click()
+    # BoxLayout:
+    #     wid:self.wid
+    #     orientation: "horizontal"
+    #     size: self.parent.size      # match the button's size
+    #     pos: self.parent.pos        # match the button's position
+    #     padding: 0
+    #     spacing: 10
+
+         #        Image:
+#            size_hint: None, 1
+#            source: root.image
+#            size: 130, 200
+#            valign: "top"
+            # image = Image(source=fname, allow_stretch=True)
+            # carousel.add_widget(image)
+            # inner_grid = GridLayout(cols=1, rows =2,id='inner_grid'+str(i),size_hint=(None,None),size=(130,200),
+            #                         spacing=5)
+            # page_button = ComicScreenBntListItem(
+            #                 id=str(i), text='#Page' + str(i),
+            #                 size=(130, 200), size_hint=(None, None),
+            #                 image=base_dir + '/' + str(comicstream_number) + '/' + str(comicstream_number) +
+            #                 '_P' + str(i) + '.jpg',)
+            #
+            # inner_grid.add_widget(page_button)
+            # smbutton = Button(size_hint=(None,None),size=(10,10),text='P%s'%str(i+1),background_color=(0,0,0,0))
+            #
+            # inner_grid.add_widget(smbutton)
+            # grid.add_widget(inner_grid)
+
+            inner_grid.add_widget(smbutton)
+            grid.add_widget(inner_grid)
+            image = Image(source=fname, allow_stretch=True)
+             print carousel.index
+
+            carousel.add_widget(image)
+         carousel.pos_hit = {'top':1}
+ 
+         #Build the popup scroll of page buttons
+@@ -200,7 +160,8 @@
+ 
+     def open_pagescroll_popup(self):
+         self.pop.open()
++class PageButton(Button):
+-
++    
+ 
+ class CRDroidApp(App):
+ 
