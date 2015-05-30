@@ -1,4 +1,4 @@
-__version__ = '1.220003'
+__version__ = '1.220007'
 DEBUG = True
 import kivy
 kivy.require('1.8.0')
@@ -18,6 +18,7 @@ from kivy.uix.button import Button
 from kivy.uix.button import ButtonBehavior
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.gridlayout import GridLayout
+from screens.comic_screen import ComicScreen, ComicScatter, PageImage, ComicImage
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.carousel import Carousel
@@ -26,60 +27,20 @@ from kivy.properties import ObjectProperty, StringProperty
 #from csvdb.csvdroid_db import build_db
 #from csconnector import CsComic,ComicStream
 from kivy.logger import Logger
+from kivy.lang import Factory
 from kivy.graphics.transformation import Matrix
 import os.path
 
 
-
-class ComicScreen(Screen):
-    pass
-
-class SecondScreen(Screen):
-    pass
-
-class PageBox(BoxLayout):
-    def __init__(self, **kwargs):
-        kwargs['padding'] = 20
-        kwargs['spaceing'] = 10
-        kwargs['orientation'] = 'horizontal'
-
-        super(PageBox, self).__init__(**kwargs)
-
-class PageButton(Button):
-    pass
-
-class PageImage(ButtonBehavior,AsyncImage):
-    def __init__(self, **kwargs):
-        super(PageImage, self).__init__(**kwargs)
-        app = App.get_running_app()
-
-    def click(self,instance):
-        app = App.get_running_app()
-        app.root.manager.current = 'comicscreen'
-        app.root.ids['my_carousel'].index = int(instance.id)
-
-class ComicScatter(ScatterLayout):
-    def __init__(self, **kwargs):
-
-        self.zoom_state = 'normal'
-        super(ComicScatter, self).__init__(**kwargs)
-    def on_touch_down(self, touch):
-        if touch.is_double_tap:
-            print self.id
-            if self.zoom_state == 'zoomed':
-                self.zoom_state = 'normal'
-                mat = self.transform_inv
-                self.apply_transform(mat,anchor=(0,0))
-            elif self.zoom_state == 'normal':
-                self.zoom_state = 'zoomed'
-                mat = Matrix().scale(2,2,2)
-                self.apply_transform(mat,anchor=touch.pos)
-            return super(ComicScatter, self).on_touch_down(touch)
 class RootWidget(FloatLayout):
 
     manager = ObjectProperty()
 
     def load_lib_screen(self, *args):
+
+        print self.ids.mywid.ids['my_carousel']
+
+
         display_mode = 'Series' #default mode
         id = 96
         # page_count = 22
@@ -124,7 +85,7 @@ class RootWidget(FloatLayout):
 
 
     def load_comic_screen(self, comicstream_number):
-        carousel = self.ids['my_carousel']
+        carousel = self.ids.comicscreenid.ids['my_carousel']
         carousel.clear_widgets()
 
         Logger.debug(str(comicstream_number))
@@ -146,7 +107,7 @@ class RootWidget(FloatLayout):
             fname='%s/%d/%d_P%d.jpg' %(base_dir, comicstream_number, comicstream_number, i)
             src_full = "%s/comic/%d/page/%d?max_height=1200#.jpg" % (base_url, comicstream_number, i)
             src_thumb = "%s/comic/%d/page/%d?max_height=200#.jpg" % (base_url, comicstream_number, i)
-            image = AsyncImage(source=src_full, allow_stretch=True)
+            image = ComicImage(source=src_full,nocache=False,keep_ratio=False,allow_stretch=True)
             print image._coreimage.size
             #expermenatal adding in saving to cache need to implement option turn saving pages on/off
             #image._coreimage.bind(on_load=self.on_image_loaded)
@@ -155,7 +116,7 @@ class RootWidget(FloatLayout):
             carousel.add_widget(scatter)
             scatter.parent.bind(pos=self.setter('pos'))
             scatter.parent.bind(size=self.setter('size'))
-            #next block code is for making the scrolling page_thumb popup.
+            # next block code is for making the scrolling page_thumb popup.
             inner_grid = GridLayout(cols=1, rows =2,id='inner_grid'+str(i),size_hint=(None,None),size=(130,200),
                                     spacing=5)
             page_image = PageImage(source=src_thumb,allow_stretch=True,
@@ -171,14 +132,14 @@ class RootWidget(FloatLayout):
 
             inner_grid.add_widget(smbutton)
             grid.add_widget(inner_grid)
-        carousel.pos_hit = {'top':1}
+
 
         #Build the popup scroll of page buttons
 
         scroll.add_widget(grid)
 
         #content.bind(on_press=popup.dismiss)
-    def open_pagescroll_popup(self):
+    def comicscreen_open_pagescroll_popup(self):
         self.pop.open()
     #going to add in save to disc after asyncimage if done downloading.
     # def on_image_loaded(self, *args):
@@ -205,6 +166,7 @@ class RootWidget(FloatLayout):
 
 class CRDroidApp(App):
 
+
     def build(self):
         self.settings_cls = SettingsWithSidebar
         self.use_kivy_settings = True
@@ -213,8 +175,8 @@ class CRDroidApp(App):
         # print setting
         # if  os.path.isfile('cachedb.sqlite') == False:
         #    # build_db()
-        c = RootWidget()
-        return c
+
+        return RootWidget()
     def build_config(self, config):
         config.setdefaults('Server',
                 {
@@ -225,7 +187,7 @@ class CRDroidApp(App):
                 'storagedir': self.user_data_dir
                 }
             )
-
+        Factory.register('ComicScreen', cls=ComicScreen)
     def build_settings(self, settings):
         settings.add_json_panel('Main Settings',
                                 self.config,
