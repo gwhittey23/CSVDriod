@@ -60,20 +60,21 @@ class PageImage(ButtonBehavior,AsyncImage):
 
 class ComicScatter(ScatterLayout):
     def __init__(self, **kwargs):
+
         self.zoom_state = 'normal'
         super(ComicScatter, self).__init__(**kwargs)
     def on_touch_down(self, touch):
         if touch.is_double_tap:
-            print self.zoom_state
+            print self.id
             if self.zoom_state == 'zoomed':
                 self.zoom_state = 'normal'
                 mat = self.transform_inv
                 self.apply_transform(mat,anchor=(0,0))
             elif self.zoom_state == 'normal':
                 self.zoom_state = 'zoomed'
-                mat = Matrix().scale(1.5, 1.5, 1.5)
+                mat = Matrix().scale(2,2,2)
                 self.apply_transform(mat,anchor=touch.pos)
-
+            return super(ComicScatter, self).on_touch_down(touch)
 class RootWidget(FloatLayout):
 
     manager = ObjectProperty()
@@ -149,14 +150,14 @@ class RootWidget(FloatLayout):
             print image._coreimage.size
             #expermenatal adding in saving to cache need to implement option turn saving pages on/off
             #image._coreimage.bind(on_load=self.on_image_loaded)
-            scatter = ComicScatter(do_rotation=False,id='sclay'+str(i),scale_min=1, scale_max=2.)
+            scatter = ComicScatter(do_rotation=False,id='sclay'+str(i),scale_min=1, scale_max=2)
             scatter.add_widget(image)
             carousel.add_widget(scatter)
-
+            scatter.parent.bind(pos=self.setter('pos'))
+            scatter.parent.bind(size=self.setter('size'))
+            #next block code is for making the scrolling page_thumb popup.
             inner_grid = GridLayout(cols=1, rows =2,id='inner_grid'+str(i),size_hint=(None,None),size=(130,200),
                                     spacing=5)
-
-
             page_image = PageImage(source=src_thumb,allow_stretch=True,
             size=(130,200),size_hint=(None, None),id=str(i))
 
@@ -182,13 +183,21 @@ class RootWidget(FloatLayout):
     #going to add in save to disc after asyncimage if done downloading.
     # def on_image_loaded(self, *args):
     #     pass
+
     def zoom_me(self):
+        '''Zoom in or back to normal this is disabled atm
+
+
+        :return:
+        '''
         carousel = self.ids['my_carousel']
         print carousel.current_slide.zoom_state
         # carousel.current_slide.scale = 1.5
         mat = Matrix().scale(1.5, 1.5, 1.5)
         carousel.current_slide.apply_transform(mat,anchor=(50,50))
-
+    def my_load_next(self):
+        app = App.get_running_app()
+        app.root.manager.current = 'comicscreen'
 
 
 
@@ -204,7 +213,8 @@ class CRDroidApp(App):
         # print setting
         # if  os.path.isfile('cachedb.sqlite') == False:
         #    # build_db()
-        return RootWidget()
+        c = RootWidget()
+        return c
     def build_config(self, config):
         config.setdefaults('Server',
                 {

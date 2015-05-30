@@ -1,4 +1,3 @@
-
 <RootWidget>:
     manager: manager
     ScreenManager:
@@ -131,12 +130,12 @@
                     size_hint: .2, .1
                     on_release: root.manager.current = 'libraryScreen'
                     opacity: 1
-                Button:
-                    pos_hint: {'center_x': .5, 'center_y': .5}
-                    text: "Zoom"
-                    size_hint: .4, .4
-                    on_release: app.root.zoom_me()
-                    opacity: 1
+    #                Button:
+    #                    pos_hint: {'center_x': .5, 'center_y': .5}
+    #                    text: "Zoom"
+    #                    size_hint: .4, .4
+    #                    on_release: app.root.zoom_me()
+    #                    opacity: 1
                 Button:
                     pos_hint: {'x': .01, 'y': .0001}
                     text: "Prev"
@@ -147,7 +146,8 @@
                     pos_hint: {'x': .8, 'y': .0001}
                     text: "Next"
                     size_hint: .2, .1
-                    on_release: my_carousel.load_next()
+                    on_release: app.root.my_load_next()
+                    #on_release: my_carousel.load_next()
                     opacity: 1
                 Button:
                     pos_hint: {'x': .3, 'y': .0001}
@@ -155,74 +155,3 @@
                     size_hint: .4, .1
                     opacity: 1
                     on_release: app.root.open_pagescroll_popup()
-
-
-<ComicScreenBntListItem@Button+AsyncImage>:
-    wid: self.wid
-    image: self.image
-    title: self.title
-    label: self.label
-    on_press: self.click()
-    BoxLayout:
-        orientation: "horizontal"
-        size: self.parent.size      # match the button's size
-        pos: self.parent.pos        # match the button's position
-        padding: 0
-        spacing: 10
-        Image:
-            id:'page_img'
-            size_hint: None, 1
-            source: root.image
-            size: 130, 200
-            valign: "top"
-
-<LibScreenBntListItem@Button>:
-    wid: self.wid
-    image: self.image
-    title: self.title
-    label: self.label
-    on_press: self.click()
-    BoxLayout:
-        orientation: "horizontal"
-        size: self.parent.size      # match the button's size
-        pos: self.parent.pos        # match the button's position
-        padding: 0
-        spacing: 10
-
-        Image:
-            size_hint: None, 1
-            source: root.image
-            size: 129, 200
-            valign: "middle"
-
-<ButtonList@GridLayout>
-    id: output
-    cols: 1
-    size_hint_y: None
-    height: self.minimum_height
-
-
-
-
-#                    id: popupcontent
-#                    Label:
-#                        text: 'Slide 0'
-#
-#                    Label:
-#                        text: 'Slide 1'
-#
-#                    Image:
-#                        source: '/Users/gerardwhittey/PycharmProjects/CRDriod/images/1855_thumb.jpg'
-#                        size: (40,40)
-#                    Image:
-#                        source: '/Users/gerardwhittey/PycharmProjects/CRDriod/images/1855_thumb.jpg'
-#                        size: (40,40)
-#                    Image:
-#                        source: '/Users/gerardwhittey/PycharmProjects/CRDriod/images/1855_thumb.jpg'
-#                        size: (40,40)
-#                    Image:
-#                        source: '/Users/gerardwhittey/PycharmProjects/CRDriod/images/1855_thumb.jpg'
-#                        size: (40,40)
-#                    Image:
-#                        source: '/Users/gerardwhittey/PycharmProjects/CRDriod/images/1855_thumb.jpg'
-#                        size: (40,40)
