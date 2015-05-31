@@ -1,0 +1,52 @@
+
+<ComicScreen>:
+    name: 'comicscreen'
+    id: comicscreenid
+    size: root.size
+    FloatLayout:
+        pos_hint: {'top':1}
+        size_hint: 1,1
+        size: self.parent.size
+        id: comicsreens_float
+        Label:
+            color: (255,0,255,1)
+        Carousel:
+            id: my_carousel
+            scroll_distance: '50dp'
+            
+            ComicImage:
+        Button:
+            pos_hint: {'x': .85, 'y': .95}
+            text: "Back to Library"
+            size_hint: .2, .1
+            on_release: app.root.manager.current = 'libraryScreen'
+            opacity: 1
+        Button:
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            text: "Zoom"
+            size_hint: .2, .1
+            on_release: root._carousel_call()
+            opacity: 1
+        Button:
+            pos_hint: {'x': .01, 'y': .0001}
+            text: "Prev"
+            size_hint: .2, .1
+            on_release: my_carousel.load_previous()
+#            on_release: root._carousel_call()
+            opacity: 1
+        Button:
+            pos_hint: {'x': .8, 'y': .0001}
+            text: "Next"
+            size_hint: .2, .1
+            on_release: my_carousel.load_next()
+            #on_release: my_carousel.load_next()
+            opacity: 1
+        Button:
+            pos_hint: {'x': .3, 'y': .0001}
+            text: 'Open Page Scroll'
+            size_hint: .4, .1
+            opacity: 1
+            on_release: app.root.comicscreen_open_pagescroll_popup()
+
+<ComicImage>
+    size_hint: 1,1

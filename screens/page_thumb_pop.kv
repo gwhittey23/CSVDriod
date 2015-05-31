@@ -1,0 +1,63 @@
+#
+#<PageThumbPop@Popup>:
+#    id: page_pop
+#    pos_hint: {'y': .001}
+#    size_hint: (1,.33)
+#    ScrollView
+#        size_hint: (1,1)
+#        do_scroll_x: True
+#        do_scroll_y: False
+#        PageThumbOutterGrid:
+#
+##            GridLayout:
+##                cols: 1
+##                rows: 2
+##                id: inner_grid
+##                size_hint: None,None
+##                size: (13,200)
+##                spacing: 5
+##                pos: self.pos
+##                size: self.size
+##                PageThumb:
+##                    id: wid
+##                PageSmallButton:
+#
+#
+#
+#<PageThumbSmallButton@Button>:
+#    size_hint: (None,None)
+#    size: (10,10)
+#    text: self.text
+#    text_color: (0,0,0),
+#    background_color: (1,1,1,.5)
+#<PageThumbImage@ButtonBehavior,Image>
+#    wid:self.id
+#    #on_press:self.pop.dismiss()
+#    #on_press: self.clik()
+#
+#<PageThumbOutterGrid@GridLayout>:
+#    rows: 1
+#    size_hint: None,None
+#    spacing: 5
+#    padding_horizontal: 5
+#    id:outtergrd
+#    minimum_width: self.width
+#    PageThumbInnerGrid:
+#        PageThumbImage:
+#        PageThumbSmallButton:
+#<PageThumScrollView@ScrollView>:
+#    size_hint: (1,1)
+#    do_scroll_x: True
+#    do_scroll_y: False
+#
+#<PageThumbInnerGrid@GridLayout>:
+#    cols: 1
+#    rows: 2
+#    id: inner_grid
+#    size_hint: None,None
+#    size: (13,200)
+#    spacing: 5
+#    pos: self.pos
+#    size: self.size
+#
+#

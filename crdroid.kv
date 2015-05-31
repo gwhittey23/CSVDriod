@@ -1,3 +1,4 @@
+#:include force screens/comicscreen.kv
 <RootWidget>:
     manager: manager
     ScreenManager:
@@ -39,7 +40,7 @@
                 TextInput:
                     id:txt1
                     size_hint: .2,.07
-                    text: '96'
+                    text: '1855'
 
                 BoxLayout:
                     Button:
@@ -55,7 +56,7 @@
                         text: 'Comic Screen'
                         font_size: 30
                         on_release: root.manager.current = 'comicscreen'
-                        on_release: app.root.load_comic_screen(2521)
+                        on_release: root.load_comic_screen(1855)
                         on_release: root.pos_hint =  {'top': 1}
         Screen:
             name: 'libraryScreen'
@@ -116,42 +117,5 @@
                 on_release: app.root.open_pagescroll_popup()
         ComicScreen:
             name: 'comicscreen'
-            id: bl
-            FloatLayout:
-                Label:
-                    color: (255,0,255,1)
-                Carousel:
-                    id: my_carousel
-                    size_hint: 1,1
+            id: comicscreenid
 
-                Button:
-                    pos_hint: {'x': .85, 'y': .95}
-                    text: "Back to Library"
-                    size_hint: .2, .1
-                    on_release: root.manager.current = 'libraryScreen'
-                    opacity: 1
-    #                Button:
-    #                    pos_hint: {'center_x': .5, 'center_y': .5}
-    #                    text: "Zoom"
-    #                    size_hint: .4, .4
-    #                    on_release: app.root.zoom_me()
-    #                    opacity: 1
-                Button:
-                    pos_hint: {'x': .01, 'y': .0001}
-                    text: "Prev"
-                    size_hint: .2, .1
-                    on_release: my_carousel.load_previous()
-                    opacity: 1
-                Button:
-                    pos_hint: {'x': .8, 'y': .0001}
-                    text: "Next"
-                    size_hint: .2, .1
-                    on_release: app.root.my_load_next()
-                    #on_release: my_carousel.load_next()
-                    opacity: 1
-                Button:
-                    pos_hint: {'x': .3, 'y': .0001}
-                    text: 'Open Page Scroll'
-                    size_hint: .4, .1
-                    opacity: 1
-                    on_release: app.root.open_pagescroll_popup()
