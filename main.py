@@ -1,4 +1,4 @@
-__version__ = '1.220007'
+__version__ = '1.220008'
 DEBUG = True
 import kivy
 kivy.require('1.8.0')
@@ -18,7 +18,7 @@ from kivy.uix.button import Button
 from kivy.uix.button import ButtonBehavior
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.gridlayout import GridLayout
-from screens.comic_screen import ComicScreen, ComicScatter, PageThumb, ComicImage
+from screens.comic_screen import ComicScreen, ComicScatter, PageThumbImage, ComicImage
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.carousel import Carousel
@@ -99,8 +99,7 @@ class RootWidget(FloatLayout):
        # cscomic = CsComic(comicstream_number)
         base_url = App.get_running_app().config.get('Server', 'url')
         base_dir = 'comic_page_images'
-        #base_file = App.get_running_app().config.get('Server', 'storagedir')
-        scroll = ScrollView( size_hint=(1,1), do_scroll_x=True, do_scroll_y=False )
+        scroll = ScrollView( size_hint=(1,1), do_scroll_x=True, do_scroll_y=False,id='page_thumb_scroll')
         self.pop = Popup(id='page_pop',title='Pages', content=scroll, pos_hint ={'y': .0001},size_hint = (1,.33))
         grid = GridLayout(rows=1, size_hint=(None,None),spacing=5,padding_horizontal=5,id='outtergrd')
         grid.bind(minimum_width=grid.setter('width'))
@@ -108,30 +107,27 @@ class RootWidget(FloatLayout):
             comic_dir = '%s/%s' %(base_dir, comicstream_number)
             if not os.path.exists(comic_dir):
                 os.makedirs(comic_dir)
-            fname='%s/%d/%d_P%d.jpg' %(base_dir, comicstream_number, comicstream_number, i)
             src_full = "%s/comic/%d/page/%d?max_height=1200#.jpg" % (base_url, comicstream_number, i)
             src_thumb = "%s/comic/%d/page/%d?max_height=200#.jpg" % (base_url, comicstream_number, i)
 
-            comic_page_image = ComicImage(nocache=False,keep_ratio=False,allow_stretch=True,id='pi_'+str(i))
+            comic_page_image = ComicImage(_index=i,nocache=False,keep_ratio=False,allow_stretch=True,id='pi_'+str(i))
             proxyImage = Loader.image(src_full)
 
-            #Clock.schedule_once(comic_page_image.my_callback, .5)
-            #expermenatal adding in saving to cache need to implement option turn saving pages on/off
-            #comic_page_image._coreimage.bind(on_load=self.on_image_loaded)
-            scatter = ComicScatter(do_rotation=False,id='sclay'+str(i),scale_min=1, scale_max=2)
+            scatter = ComicScatter(do_rotation=False, do_scale=False,
+                  do_translation_x=False,id='sclay'+str(i),scale_min=1, scale_max=2)
             scatter.add_widget(comic_page_image)
             carousel.add_widget(scatter)
             c_index =  len(carousel.slides)
             comic_page_image.car_index = c_index
-            proxyImage.bind(on_load=comic_page_image._image_downloaded)
+
             scatter.parent.bind(pos=self.setter('pos'))
             scatter.parent.bind(size=self.setter('size'))
             # next block code is for making the scrolling page_thumb popup.
             inner_grid = GridLayout(cols=1, rows =2,id='inner_grid'+str(i),size_hint=(None,None),size=(130,200),
                                     spacing=5)
-            page_thumb = PageThumb(source=src_thumb,allow_stretch=True,
-            size=(130,200),size_hint=(None, None),id=str(i))
-
+            page_thumb = PageThumbImage(source=src_thumb,allow_stretch=True,
+            size=(130,200),size_hint=(None, None),id=str(i),_index=i)
+            proxyImage.bind(on_load=comic_page_image._image_downloaded)
             inner_grid.add_widget(page_thumb)
             page_thumb.parent.bind(pos=self.setter('pos'))
             page_thumb.parent.bind(pos=self.setter('pos'))
@@ -150,6 +146,7 @@ class RootWidget(FloatLayout):
         #content.bind(on_press=popup.dismiss)
     def comicscreen_open_pagescroll_popup(self):
         self.pop.open()
+
     #going to add in save to disc after asyncimage if done downloading.
     # def on_image_loaded(self, *args):
     #     pass
