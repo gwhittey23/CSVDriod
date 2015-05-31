@@ -18,7 +18,7 @@ from kivy.uix.button import Button
 from kivy.uix.button import ButtonBehavior
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.gridlayout import GridLayout
-from screens.comic_screen import ComicScreen, ComicScatter, PageImage, ComicImage
+from screens.comic_screen import ComicScreen, ComicScatter, PageThumb, ComicImage
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.carousel import Carousel
@@ -27,7 +27,9 @@ from kivy.properties import ObjectProperty, StringProperty
 #from csvdb.csvdroid_db import build_db
 #from csconnector import CsComic,ComicStream
 from kivy.logger import Logger
+from kivy.loader import Loader
 from kivy.lang import Factory
+from kivy.loader import ProxyImage
 from kivy.graphics.transformation import Matrix
 import os.path
 
@@ -38,7 +40,8 @@ class RootWidget(FloatLayout):
 
     def load_lib_screen(self, *args):
 
-        print self.ids.mywid.ids['my_carousel']
+
+
 
 
         display_mode = 'Series' #default mode
@@ -85,6 +88,7 @@ class RootWidget(FloatLayout):
 
 
     def load_comic_screen(self, comicstream_number):
+
         carousel = self.ids.comicscreenid.ids['my_carousel']
         carousel.clear_widgets()
 
@@ -94,7 +98,7 @@ class RootWidget(FloatLayout):
         id = '96'
        # cscomic = CsComic(comicstream_number)
         base_url = App.get_running_app().config.get('Server', 'url')
-        base_dir = 'images'
+        base_dir = 'comic_page_images'
         #base_file = App.get_running_app().config.get('Server', 'storagedir')
         scroll = ScrollView( size_hint=(1,1), do_scroll_x=True, do_scroll_y=False )
         self.pop = Popup(id='page_pop',title='Pages', content=scroll, pos_hint ={'y': .0001},size_hint = (1,.33))
@@ -107,32 +111,37 @@ class RootWidget(FloatLayout):
             fname='%s/%d/%d_P%d.jpg' %(base_dir, comicstream_number, comicstream_number, i)
             src_full = "%s/comic/%d/page/%d?max_height=1200#.jpg" % (base_url, comicstream_number, i)
             src_thumb = "%s/comic/%d/page/%d?max_height=200#.jpg" % (base_url, comicstream_number, i)
-            image = ComicImage(source=src_full,nocache=False,keep_ratio=False,allow_stretch=True)
-            print image._coreimage.size
+
+            comic_page_image = ComicImage(nocache=False,keep_ratio=False,allow_stretch=True,id='pi_'+str(i))
+            proxyImage = Loader.image(src_full)
+
+            #Clock.schedule_once(comic_page_image.my_callback, .5)
             #expermenatal adding in saving to cache need to implement option turn saving pages on/off
-            #image._coreimage.bind(on_load=self.on_image_loaded)
+            #comic_page_image._coreimage.bind(on_load=self.on_image_loaded)
             scatter = ComicScatter(do_rotation=False,id='sclay'+str(i),scale_min=1, scale_max=2)
-            scatter.add_widget(image)
+            scatter.add_widget(comic_page_image)
             carousel.add_widget(scatter)
+            c_index =  len(carousel.slides)
+            comic_page_image.car_index = c_index
+            proxyImage.bind(on_load=comic_page_image._image_downloaded)
             scatter.parent.bind(pos=self.setter('pos'))
             scatter.parent.bind(size=self.setter('size'))
             # next block code is for making the scrolling page_thumb popup.
             inner_grid = GridLayout(cols=1, rows =2,id='inner_grid'+str(i),size_hint=(None,None),size=(130,200),
                                     spacing=5)
-            page_image = PageImage(source=src_thumb,allow_stretch=True,
+            page_thumb = PageThumb(source=src_thumb,allow_stretch=True,
             size=(130,200),size_hint=(None, None),id=str(i))
 
-            inner_grid.add_widget(page_image)
-            page_image.parent.bind(pos=self.setter('pos'))
-            page_image.parent.bind(pos=self.setter('pos'))
-            page_image.bind(on_press=self.pop.dismiss)
-            page_image.bind(on_press=page_image.click)
+            inner_grid.add_widget(page_thumb)
+            page_thumb.parent.bind(pos=self.setter('pos'))
+            page_thumb.parent.bind(pos=self.setter('pos'))
+            page_thumb.bind(on_press=self.pop.dismiss)
+            page_thumb.bind(on_press=page_thumb.click)
             smbutton = Button(size_hint=(None,None),size=(10,10),text='P%s'%str(i+1),text_color=(0,0,0),
             background_color=(1,1,1,.5))
 
             inner_grid.add_widget(smbutton)
             grid.add_widget(inner_grid)
-
 
         #Build the popup scroll of page buttons
 
@@ -152,7 +161,7 @@ class RootWidget(FloatLayout):
         :return:
         '''
         carousel = self.ids['my_carousel']
-        print carousel.current_slide.zoom_state
+
         # carousel.current_slide.scale = 1.5
         mat = Matrix().scale(1.5, 1.5, 1.5)
         carousel.current_slide.apply_transform(mat,anchor=(50,50))

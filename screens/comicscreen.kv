@@ -19,17 +19,18 @@
             size_hint: .2, .1
             on_release: app.root.manager.current = 'libraryScreen'
             opacity: 1
-#        Button:
-#            pos_hint: {'center_x': .5, 'center_y': .5}
-#            text: "Zoom"
-#            size_hint: .4, .4
-#            on_release: app.root.zoom_me()
-#            opacity: 1
+        Button:
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            text: "Zoom"
+            size_hint: .2, .1
+            on_release: root._carousel_call()
+            opacity: 1
         Button:
             pos_hint: {'x': .01, 'y': .0001}
             text: "Prev"
             size_hint: .2, .1
             on_release: my_carousel.load_previous()
+#            on_release: root._carousel_call()
             opacity: 1
         Button:
             pos_hint: {'x': .8, 'y': .0001}
