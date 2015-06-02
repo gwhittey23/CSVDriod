@@ -1,37 +1,13 @@
+#:include force screens/library_screen.kv
 #:include force screens/comicscreen.kv
+
 <RootWidget>:
     manager: manager
     ScreenManager:
         id: manager
         Screen:
             name: 'MainScreen'
-            ActionBar:
-                id: _action
-                size_hint: 1,0.03
-                pos_hint: {'top':1}
-                ActionView:
-                    use_separator: True
-                    ActionPrevious:
-                        title: 'ComicStreamer Reader For Driod'
-                        with_previous: False
-                    ActionOverflow:
-
-                    ActionButton:
-                        text: 'Settings'
-                        on_release: app.open_settings()
-                    ActionButton:
-                        text: 'Btn2'
-                    ActionButton:
-                        text: 'Btn3'
-                    ActionGroup:
-                        text: 'Group1'
-                        ActionButton:
-                            text: 'Btn5'
-                        ActionButton:
-                            text: 'Btn6'
-                        ActionButton:
-                            text: 'Btn7'
-
+            TopActionBar:
             BoxLayout:
                 orientation: 'vertical'
                 Label:
@@ -58,64 +34,35 @@
                         on_release: root.manager.current = 'comicscreen'
                         on_release: root.load_comic_screen(1855)
                         on_release: root.pos_hint =  {'top': 1}
-        Screen:
-            name: 'libraryScreen'
-            ActionBar:
-                id: _action
-                size_hint: 1,0.03
-                pos_hint: {'top':1}
-                ActionView:
-                    use_separator: True
-                    ActionPrevious:
-                        title: 'Library'
-                        with_previous: False
-                    ActionOverflow:
-                    ActionButton:
-                        text: 'Settings'
-                        on_release: app.open_settings()
-                    ActionButton:
-                        text: 'Btn2'
-                    ActionButton:
-                        text: 'Btn3'
-                    ActionGroup:
-                        text: 'Group1'
-                        ActionButton:
-                            text: 'Btn5'
-                        ActionButton:
-                            text: 'Btn6'
-                        ActionButton:
-                            text: 'Btn7'
-            FloatLayout:
-                id:fl1
-                Label:
-                    text:''
-                    color: (255,0,255,1)
+        LibraryScreen:
 
-            Button:
-                pos_hint: {'x': .85, 'y': .95}
-                text: "Back to Main Page"
-                size_hint: .2, .05
-                on_release: root.manager.current = 'MainScreen'
-                opacity: 1
-            Button:
-                pos_hint: {'x': .01, 'y': .0001}
-                text: "Prev"
-                size_hint: .2, .05
-                on_release: my_carousel.load_previous()
-                opacity: 0
-            Button:
-                pos_hint: {'x': .85, 'y': .001}
-                text: "Next"
-                size_hint: .2, .05
-                on_release: my_carousel.load_next()
-                opacity: 1
-            Button:
-                pos_hint: {'x': .3, 'y': .0001}
-                text: 'Open Page Scroll'
-                size_hint: .4, .05
-                opacity: 1
-                on_release: app.root.open_pagescroll_popup()
         ComicScreen:
             name: 'comicscreen'
             id: comicscreenid
 
+<TopActionBar>:
+    id: _action
+    size_hint: 1,0.03
+    pos_hint: {'top':1}
+    ActionView:
+        use_separator: True
+        ActionPrevious:
+            title: 'ComicStreamer Reader For Driod'
+            with_previous: False
+        ActionOverflow:
+
+        ActionButton:
+            text: 'Settings'
+            on_release: app.open_settings()
+        ActionButton:
+            text: 'Btn2'
+        ActionButton:
+            text: 'Btn3'
+        ActionGroup:
+            text: 'Group1'
+            ActionButton:
+                text: 'Btn5'
+            ActionButton:
+                text: 'Btn6'
+            ActionButton:
+                text: 'Btn7'
