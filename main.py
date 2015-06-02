@@ -117,7 +117,7 @@ class RootWidget(FloatLayout):
             src_thumb = "%s/comic/%d/page/%d?max_height=200#.jpg" % (base_url, comicstream_number, i)
 
             comic_page_image = ComicImage(src=src_full, _index=i,nocache=False,keep_ratio=False,allow_stretch=True,id='pi_'+str(i),
-                                          size_hint = (None,None),size=self.size
+                                          size_hint = (1,1),size=self.size
                                           )
             proxyImage = Loader.image(src_full)
 
@@ -155,7 +155,6 @@ class TopActionBar(ActionBar):
 
 class CRDroidApp(App):
 
-
     def build(self):
         self.settings_cls = SettingsWithSidebar
         self.use_kivy_settings = True
@@ -166,16 +165,19 @@ class CRDroidApp(App):
         #    # build_db()
 
         return RootWidget()
+
     def build_config(self, config):
-        config.setdefaults('Server',
-                {
-                'url': 'http://',
-                'storagedir': self.user_data_dir
-                })
+        config.setdefaults('Server', {
+            'url': 'http://',
+            'storagedir': self.user_data_dir
+            })
 
-
-
+        config.setdefaults('Display', {
+            'mag_glass_size': 200,
+            'dblpagesplit': self.user_data_dir
+            })
         Factory.register('ComicScreen', cls=ComicScreen)
+
     def build_settings(self, settings):
         settings.add_json_panel('Server Settings',
                                 self.config,

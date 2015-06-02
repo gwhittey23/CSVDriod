@@ -3,9 +3,7 @@
     name: 'comicscreen'
     id: 'comicscreen'
     size: root.size
-    FloatLayout:
-        pos_hint: {'top':1}
-        size_hint: 1,1
+    ComicFloatLayout:
         size: self.parent.size
         id: 'comicsreens_float'
         Label:
@@ -26,6 +24,12 @@
             text: "Open Magnifying glass"
             size_hint: .05, .05
             on_release: root._carousel_call()
+        Button:
+            pos_hint: {'center_x': .35, 'center_y': .35}
+            text: "Call Test"
+            size_hint: .05, .05
+            on_release: root._cal_id()
+            opacity: 1
             opacity: 1
         Button:
             pos_hint: {'x': .01, 'y': .0001}
@@ -48,9 +52,15 @@
             opacity: 1
             on_release: app.root.comicscreen_open_pagescroll_popup()
 
+
+
 <ComicImage>
     size_hint: 1,1
-#
+
+<ComicFloatLayout@FloatLayout>
+    pos_hint: {'top':1}
+    size_hint: 1,1
+
 #<Widget>:
 #    canvas.after:
 #        Line:

@@ -1,6 +1,6 @@
 #:include force screens/library_screen.kv
 #:include force screens/comicscreen.kv
-
+#:include force parts.kv
 <RootWidget>:
     manager: manager
     ScreenManager:
@@ -20,17 +20,17 @@
 
                 BoxLayout:
                     Button:
-                        text: 'Get Full Data'
-                        font_size: 30
-                        on_release: app.get_full_data()
+                        text: 'Back to Comic Book'
+                        font_size: 15
+                        on_release: root.manager.current = 'comicscreen'
                     Button:
                         text: 'Load Config'
-                        font_size: 30
+                        font_size: 15
                         on_release: root.manager.current = 'libraryScreen'
                         on_release: app.root.load_lib_screen()
                     Button:
                         text: 'Comic Screen'
-                        font_size: 30
+                        font_size: 15
                         on_release: root.manager.current = 'comicscreen'
                         on_release: root.load_comic_screen(1855)
                         on_release: root.pos_hint =  {'top': 1}
@@ -40,29 +40,4 @@
             name: 'comicscreen'
             id: comicscreenid
 
-<TopActionBar>:
-    id: _action
-    size_hint: 1,0.03
-    pos_hint: {'top':1}
-    ActionView:
-        use_separator: True
-        ActionPrevious:
-            title: 'ComicStreamer Reader For Driod'
-            with_previous: False
-        ActionOverflow:
 
-        ActionButton:
-            text: 'Settings'
-            on_release: app.open_settings()
-        ActionButton:
-            text: 'Btn2'
-        ActionButton:
-            text: 'Btn3'
-        ActionGroup:
-            text: 'Group1'
-            ActionButton:
-                text: 'Btn5'
-            ActionButton:
-                text: 'Btn6'
-            ActionButton:
-                text: 'Btn7'

@@ -1,34 +1,39 @@
 import json
 
 settings_json = json.dumps([
-    {'type': 'title',
-     'title': 'ComicStream Server Settings'},
+    {'type':    'title',
+     'title':   'ComicStream Server Settings'},
 
-    {'type': 'string',
-     'title': 'Server URL',
-     'desc': 'URL for server',
+    {'type':    'string',
+     'title':   'Server URL',
+     'desc':    'URL for server',
      'section': 'Server',
-     'key': 'url'},
-    {'type': 'path',
-     'title': 'Storage Directory',
-     'desc': 'Where to store Comic Pages Buffer',
+     'key':     'url'},
+    {'type':    'path',
+     'title':   'Storage Directory',
+     'desc':    'Where to store Comic Pages Buffer',
      'section': 'Server',
-     'key': 'storagedir'}])
+     'key':     'storagedir'}
+    ])
 
 
 settings_json_dispaly = json.dumps(
     [
-     {'type': 'title',
-     'title': 'Settings for how comic reader behaves'},
+     {'type':   'title',
+     'title':   'Settings for how comic reader behaves'},
 
-    {'type': 'bool',
-     'title': 'Split Double Page',
-     'desc': 'Split double pages into 2 slides',
+    {'type':    'bool',
+     'title':   'Split Double Page',
+     'desc':    'Split double pages into 2 slides',
      'section': 'Display',
-     'key': 'dblpagesplit'},
-
-
-                ])
+     'key':     'dblpagesplit'},
+    {
+    'type':     'numeric',
+    'title':    'Magnifying Glass Size',
+    'desc':     'Size of Magnifying Glass Square on each side',
+    'section':  'Display',
+    'key':      'mag_glass_size'},
+    ])
 
 
 
